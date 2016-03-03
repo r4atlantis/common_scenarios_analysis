@@ -69,7 +69,13 @@ currentdirectory <- getwd()
 on.exit(setwd(currentdirectory))
 setwd(dir)
 
-source("Functions_ScenarioEffect_2.03.2016.r")  # soure the main function that calculates impacts that will be plotted here.
+# check to see if "calc.pH.effect" exists in the working directory
+# "calc.pH.effect" calculates the impacts that will be plotted here.
+if (!"calc.pH.effect" %in% ls()) {
+  stop(paste("\nThe function calc.pH.effect does not exist in your\n",
+    "global environment. Please source the function from the\n",
+    "r4atlantis\\common_scenarios_analysis\\R folder"))
+}
 
 #regionNames <- list("CalCu_","GoMex_","NOBAtestONLY_", "NEUSFixedF_", "GuamAtlantis_","AEEC_", "ams71SPF_")  # GuamAtlantis_ NOBAtestONLY is real output but wrong scenario, just testing formats here.
 
