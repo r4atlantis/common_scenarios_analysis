@@ -1,4 +1,5 @@
-PlotGuildBiomassOneScenarioVsBaseCase <- function(thisRunName = "OA_01", regionNames = list("CalCu_","GoMex_","NOBAtestONLY_", "NEUSFixedF_", "GuamAtlantis_","AEEC_", "AustSE_"))
+PlotGuildBiomassOneScenarioVsBaseCase <- function(thisRunName = "OA_01", regionNames = list("CalCu_","GoMex_","NOBAtestONLY_", "NEUSFixedF_", "GuamAtlantis_","AEEC_", "AustSE_"),
+  dir = "C:/Users/Isaac.Kaplan/Documents/Atlantis/AtlantisSummit/CommonScenarios/CalCurrentSUMMITallcommonscenarios/ModelComparison/ModelComparison/CommonScenarios")
 
 {
 
@@ -64,8 +65,9 @@ PlotGuildBiomassOneScenarioVsBaseCase <- function(thisRunName = "OA_01", regionN
 #-------------------------------------
 # In order for this to run, all of the scenarios need to be put into one folder
 # e.g. "CommonScenarios"
-
-setwd("C:/Users/Isaac.Kaplan/Documents/Atlantis/AtlantisSummit/CommonScenarios/CalCurrentSUMMITallcommonscenarios/ModelComparison/ModelComparison/CommonScenarios")
+currentdirectory <- getwd()
+on.exit(setwd(currentdirectory))
+setwd(dir)
 
 source("Functions_ScenarioEffect_2.03.2016.r")  # soure the main function that calculates impacts that will be plotted here.
 
