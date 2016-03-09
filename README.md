@@ -1,9 +1,9 @@
 # common_scenarios_analysis
 code related to common scenario analysis started at Atlantis summit. 
 
-NOTES on data:   The zipped .txt BiomIndx.txt files for this, and the .CSV basic information on functional groups in guildsin each model,
+NOTES on data:   The zipped .txt BiomIndx.txt files for this, and the .CSV basic information on functional groups in guilds within each model,
 are on the Atlantis Summit Common Scenarios SVN, here: 
-https://svnserv.csiro.au/svn/ext/atlantis/AtlantisSummit/Models/DataCLEANCommonScenariosGuidPlots
+https://svnserv.csiro.au/svn/ext/atlantis/AtlantisSummit/Models/DataCLEANCommonScenariosGuildPlots
 
 
 These .txt and .csv files conform to filename specifications found on the google Doc for common scenarios, 
