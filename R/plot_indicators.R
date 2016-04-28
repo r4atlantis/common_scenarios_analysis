@@ -15,6 +15,9 @@
 #' @param axis_labels A vector of names for the indicator labels to be included
 #' on the plot. 
 #' @param plotfile A string detailing the filename of the pdf to contain the plot.
+#' @param standardized Logical indicating whether the indicators have been 
+#' standardized to a base scenario before calling the plotting function.
+#' Defaults to FALSE.
 #' 
 #'
 #' @examples
@@ -37,7 +40,8 @@ plot_indicators <- function(ind,
                             colvec=c("#66c2a5","#fc8d62","#8da0cb"),
                             legend_labels=paste("Scenario ",1:3,sep=""),
                             axis_labels=1:8,
-                            plotfile='indicator_plot.pdf', ...) {
+                            plotfile='indicator_plot.pdf', 
+                            standardized=FALSE, ...) {
   aa2 <- ind[,-1]
   #make all in zero to max(ind), can add code here to retain 0->1 for proportion indicators.
   aa1 <- rep(1,ncol(aa2))
@@ -47,9 +51,20 @@ plot_indicators <- function(ind,
   #make MTL indicators minimum of 3
   pick <- grep("Mtl",names(ind)[-1])
   aa0[pick] <- 2
-  
+  if (standardized) {
+    aa1[] <- 2
+    aa0[] <- 0
+    aa3 <- rep(1,length(aa1))
+  }
   #combine to 
   new_dat <- as.data.frame(rbind(aa1,aa0,aa2))
+  lwd_use <- rep(4,nrow(ind))
+  col_use <- colvec
+  if (standardized) {
+    new_dat <- as.data.frame(rbind(aa1,aa0,aa3,aa2))
+    col_use <- c(gray(0.1),col_use)
+    lwd_use <- c(0.5,lwd_use)
+  }
   
   #colnames(new_dat) <- c("Biomass","Catch","Cat/Bio","Dem:Pel","Birds & Seals","MTL Catch","Catch/PP","PropOF","Landed Value")
   #axis_labels <- names(new_dat)
@@ -59,8 +74,8 @@ plot_indicators <- function(ind,
   
   pdf(file=plotfile)
   par(mar=c(0,0,3,0),oma=c(0,0,0,0))
-  fmsb::radarchart(new_dat,pty=32,plwd=4,cglcol=gray(0.1),xlim=c(-1.5,2),
-                   ylim=c(-1.5,1.5),pcol=colvec,plty=1,vlabels=axis_labels)
+  fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
+                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels)
   
   legend(0.7,1.6,legend=legend_labels,lwd=3,col=colvec,cex=0.8,bty='n')
   #mtext(text="(a) Mortality scenarios",side=3,adj=0,line=0,cex=1.5)
@@ -82,6 +97,19 @@ plot_indicators(ind=indicators[,c("Time",ind_choose)],
                 plotfile='~/sandbox/indicator_plot.pdf',
                 axis_labels=ind_choose,
                 legend_labels=indicators$Time)
+
+
+indicators2 <- indicators
+indicators2[1,-1] <- indicators2[1,-1]/indicators2[2,-1]
+
+plot_indicators(ind=indicators2[,c("Time",ind_choose)],
+                plotfile='~/sandbox/indicator_plot.pdf',
+                axis_labels=ind_choose,
+                legend_labels=indicators$Time,
+                standardized=TRUE)
+
+
+
 
 ##axis_labels <- c("TotBio","TotCat","Cat/Bio","FishBio","DemPelFish","TEPs","Birds","Seals","Whales","DemCat","PelCat","MTLBio","MTLCat",
 ##              "Bio/PP","DemBio/PP","PelBio/PP","Cat/PP","DemCat/PP","PelCat/PP","FishCat","FishCat/FishBio")
