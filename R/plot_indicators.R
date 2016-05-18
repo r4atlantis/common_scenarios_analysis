@@ -42,6 +42,13 @@ plot_indicators <- function(ind,
                             axis_labels=1:8,
                             plotfile='indicator_plot.pdf', 
                             standardized=FALSE, ...) {
+  
+  #throw warning if Isaac forgets to use a color vector the length of his scenarios
+  if (length(colvec)<nrow(ind)) {
+    print("YOU SUPPLIED A COLOR VECTOR THAT IS SHORTER THAN THE NUMBER OF SCNEARIOS")
+    print("COLORS WILL BE RECYCLED AND YOU WON'T BE ABLE TO TELL SCENARIOS APART")
+  }
+
   aa2 <- ind[,-1]
   #make all in zero to max(ind), can add code here to retain 0->1 for proportion indicators.
   aa1 <- rep(1,ncol(aa2))
