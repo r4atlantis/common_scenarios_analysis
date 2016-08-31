@@ -1,12 +1,12 @@
 #' Convert Isaac's basicinfo.csv to a lookup table with species in rows rather than columns
 #'
-#' Takes a filename containing comma separated 'basicinfo' and converts to a 
+#' Takes a filename containing comma separated 'basicinfo' and converts to a
 #' lookup table for use by \code{get_indicators()}.
-#' 
-#' @author Gavin Fay 
+#'
+#' @author Gavin Fay
 #'
 #' @param lookupfile A string containing the filename of the basicinfo.csv
-#' 
+#'
 #'
 #' @examples
 #' #example using Isaac's example lookup table with an old NEUS text output
@@ -23,10 +23,3 @@ read_lookup <- function(lookupfile)
     read.lookup[,icol] <- as.numeric(as.character(read.lookup[,icol]))
   return(read.lookup)
 }
-
-#Example
-#lookupfile <- file.path("~","Atlantis","r4atlantis","common_scenarios_analysis","CalCu_BasicInfo.csv")
-#lookup <- read_lookup(lookupfile)
-
-
-
