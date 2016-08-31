@@ -129,7 +129,7 @@ plot_indicators <- function(ind,
     fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
                    ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,axistype=4,seg=4, caxislabels=c("0","0.5","1","1.5","2"))  #seg=5) #
 
-     write.csv(new_dat, file = paste(plotfile, ".csv"))
+     write.csv(new_dat, file = paste0(plotfile, ".csv"))
 
 #text(0.07,0.065,"-1",cex=2)
 #text(0.07,0.57,"0",cex=2)
