@@ -56,8 +56,7 @@
  # "mpa_50"
   # "mpa_10"
 
-source("R\\calc.pH.effect.R")
-source("R\\PlotGuildBiomassOneScenarioVsBaseCase.r")
+ignore <- sapply(dir("R", pattern = "\\.R|\\.r", full.names = TRUE), source)
 
 # PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CalCu_", "GOC_"),yr.start=40,yr.end=49)
 #  PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CalCu_", "GOC_"),yr.start=40,yr.end=49)
