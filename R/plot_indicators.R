@@ -42,13 +42,15 @@ plot_indicators <- function(ind,
                             axis_labels=1:8,
                             plotfile='indicator_plot.pdf', 
                             standardized=FALSE, ...) {
-  
-  #throw warning if Isaac forgets to use a color vector the length of his scenarios
+                            
+#throw warning if Isaac forgets to use a color vector the length of his scenarios
   if (length(colvec)<nrow(ind)) {
     print("YOU SUPPLIED A COLOR VECTOR THAT IS SHORTER THAN THE NUMBER OF SCNEARIOS")
     print("COLORS WILL BE RECYCLED AND YOU WON'T BE ABLE TO TELL SCENARIOS APART")
-  }
-
+    stop("Stopped function plot_indicators for your own sanity")
+  }                           
+                            
+                            
   aa2 <- ind[,-1]
   #make all in zero to max(ind), can add code here to retain 0->1 for proportion indicators.
   aa1 <- rep(1,ncol(aa2))
@@ -59,7 +61,7 @@ plot_indicators <- function(ind,
   pick <- grep("Mtl",names(ind)[-1])
   aa0[pick] <- 2
   if (standardized) {
-    aa1[] <- 2
+    aa1[] <- 2.0
     aa0[] <- 0
     aa3 <- rep(1,length(aa1))
   }
@@ -81,8 +83,28 @@ plot_indicators <- function(ind,
   
   pdf(file=plotfile)
   par(mar=c(0,0,3,0),oma=c(0,0,0,0))
-  fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
-                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels)
+
+    fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
+                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,axistype=4,seg=4, caxislabels=c("0","0.5","1","1.5","2"))  #seg=5) #
+                   
+     write.csv(new_dat, file = paste(plotfile, ".csv"))              
+             
+#text(0.07,0.065,"-1",cex=2)
+#text(0.07,0.57,"0",cex=2)
+#text(0.07,1.035,"1",cex=2)      
+                   
+                   
+   # fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
+   #                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,caxislabels=c("-1","0","1"),axistype=1)
+            
+   
+   #  fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
+   #                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,axistype = 1)
+   
+ 
+                   
+  # playing with raphaelcode: fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),
+     #            pcol=col_use,plty=1,vlabels=axis_labels,axistype=0, seg=2,centerzero=T ,caxislabels=c("-1","0","1"))                   
   
   legend(0.7,1.6,legend=legend_labels,lwd=3,col=colvec,cex=0.8,bty='n')
   #mtext(text="(a) Mortality scenarios",side=3,adj=0,line=0,cex=1.5)

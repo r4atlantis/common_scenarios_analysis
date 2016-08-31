@@ -67,15 +67,15 @@ PlotGuildBiomassOneScenarioVsBaseCase <- function(thisRunName = "OA_01", regionN
 # e.g. "CommonScenarios"
 currentdirectory <- getwd()
 on.exit(setwd(currentdirectory))
-setwd(dir)
+setwd(currentdirectory) # was set to dir, don't use that now
 
 # check to see if "calc.pH.effect" exists in the working directory
 # "calc.pH.effect" calculates the impacts that will be plotted here.
-if (!"calc.pH.effect" %in% ls()) {
-  stop(paste("\nThe function calc.pH.effect does not exist in your\n",
-    "global environment. Please source the function from the\n",
-    "r4atlantis\\common_scenarios_analysis\\R folder"))
-}
+#if (!"calc.pH.effect" %in% ls()) {
+#  stop(paste("\nThe function calc.pH.effect does not exist in your\n",
+#    "global environment. Please source the function from the\n",
+#    "r4atlantis\\common_scenarios_analysis\\R folder"))
+#}
 
 #regionNames <- list("CalCu_","GoMex_","NOBAtestONLY_", "NEUSFixedF_", "GuamAtlantis_","AEEC_", "ams71SPF_")  # GuamAtlantis_ NOBAtestONLY is real output but wrong scenario, just testing formats here.
 
@@ -93,7 +93,30 @@ num.models <- length(regionNames)
 
 models.list <- list()
 
+#-------------
 
+# Setting up color scheme, to be conistent across plots and alos consistent with the indicators plots: 
+
+allregionNames <- list("CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_", "NEUSDyn_","GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_","CAM_")
+simpleregionNames <- list("California Current","Gulf Mexico","Gulf California","Nordic and Barents Sea", "NE USA fixed F", "NE USA Dyn.F","Guam","English Channel", "SE Australia","SE Australia DynEffort","Chesapeake Bay")
+
+
+colorsToUse <- NA
+simpleNamesToUse <-NA
+
+for (regionIndex in 1:length(regionNames))
+{
+colorsToUse[regionIndex] <- which(allregionNames==regionNames[[regionIndex]])
+simpleNamesToUse[regionIndex] <- which(allregionNames==regionNames[[regionIndex]])
+}
+
+print("colorsToUse")
+print(colorsToUse)
+
+coloursAvailableForAllModels = colorRampPalette(c("#8B1A1A", "#CD6600", "#EEB422", "#228B22","#104E8B", "#68228B"), space ="rgb")(12)
+coloursForTheseModels <- coloursAvailableForAllModels[colorsToUse]
+coloursForTheseModels.transparent <- paste(coloursForTheseModels, 90, sep="")
+simpleregionNamesForTheseModels <- simpleregionNames[simpleNamesToUse]
 
 
 #-----------
@@ -114,6 +137,9 @@ for(i in 1:num.models) {
   temp.dat<- calc.pH.effect(baseOutBiomIndxFileName, scenarioOutBiomIndxFileName, yr.start = 40, yr.end = 49, scenarioNameString="GiveName", CSV.file.name = paste(regionName,"BasicInfo.csv",sep=""), ifplot=F)
 
 
+  # NEED TO GO IN RIGHT HERE AND CALL GETINDICATORS, FOR EACH MODEL AND ALSO FOR ITS BASE CASE. 
+  # THEN DOWN BELOW PLOT INDICAOTRS (NORMALIZED BY BASE CASE) EITHER USING EMMA STYLE PLOTS OR  PLOT_INDICATORS
+
   models.list[[i]] <- temp.dat$dataframe.effect
 
   # CAN PROBABLY ADD THIS BACK. names(models.list[[i]]) <- regionNames[i] #files[1]
@@ -130,9 +156,9 @@ names <- c("Mammal", "Seabird", "Shark", "Demersal Fish",
            "Pelagic Fish", "Squid", "Filter Feeder", "Epibenthos",
            "Zooplankton", "Primary Producer", "Infauna", "Detritus")
 x.locations <- c(1:num.guilds)*num.models
-colours = colorRampPalette(c("#8B1A1A", "#CD6600", "#EEB422", "#228B22",
-                             "#104E8B", "#68228B"), space ="rgb")(num.models)
-col.trans <- paste(colours, 90, sep="")
+#colours = colorRampPalette(c("#8B1A1A", "#CD6600", "#EEB422", "#228B22",
+#                            "#104E8B", "#68228B"), space ="rgb")(num.models)
+#col.trans <- paste(colours, 90, sep="")
 xmax <- num.guilds*num.models
 ymin <- -1 # NEED TO FIX THIS AT SOME POINT AS WELL.
 ymax <- 1
@@ -164,6 +190,13 @@ pdf(paste("AllInOnePlot_", thisRunName, ".pdf", sep=""), width=20, height=8.5)
 par(oma=c(4,0,0,0))
 par(mar=c(5.1, 4.1, 1, 2.1))
 
+#Isaac output text for Gavin
+meanResponsePerModel <- matrix(nrow = num.models, ncol = length(group.order)) 
+cvResponsePerModel <- matrix(nrow = num.models, ncol = length(group.order)) 
+geommeanResponseOverModels <- matrix(nrow = 1, ncol = length(group.order)) 
+
+
+
 plot(x=1, y=1, col="white", axes=F, xlim=c(1, xmax), ylim=c(ymin, ymax),
      xlab="", ylab="")
 axis(2, las=1)
@@ -178,12 +211,30 @@ for(j in 1:length(group.order)) {
     temp.dat <- models.list[[i]]
     group.temp <- temp.dat[1, temp.dat[rownames(temp.dat) == group.order[j],]==1]
     group.temp <- group.temp[!is.na(group.temp)]  #   *rnorm(1, 1)
-    points(x=counter, y=mean(unlist(group.temp)), col=colours[i], pch=16)
-    lines(x=rep(counter, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=col.trans[i])
+    points(x=counter, y=mean(unlist(group.temp)), col="black", pch=16,cex=1.5)
+    numSppAsPoints <- length(unlist(group.temp))
+    points(x=rep(counter,numSppAsPoints),y=unlist(group.temp),col=coloursForTheseModels.transparent[i],pch= 17)
+    lines(x=rep(counter, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=coloursForTheseModels.transparent[i])
+    
+        if (!is.na( unlist(group.temp)) && ( min(group.temp) < ymin))
+             {
+              text(x = counter  , y = 0.9*ymin, lab = toString(round(min(group.temp),digits=1)), col="black",cex=1.1, srt=90 )
+             }
+           if (!is.na( unlist(group.temp)) && (max(group.temp) > ymax))
+             {
+             text(x = counter  , y = 0.9*ymax, lab = toString( round(max(group.temp),digits=1)), col="black",cex=1.1, srt=90 )
+             }
+    
+    #Isaac output text for Gavin
+    meanResponsePerModel[i,j] <- mean(unlist(group.temp))
+    cvResponsePerModel[i,j] <- sd(unlist(group.temp))/mean(unlist(group.temp))
+    
+    
   }
 }
-legend("topleft", col=colours[1:num.models], bty="n", pch=c(19,19),
-       legend=regionNames, cex=1)
+legend("topleft", col=coloursForTheseModels[1:num.models], bty="n", pch=c(19,19),
+       legend = simpleregionNamesForTheseModels, cex=1)
+
 
 
 dev.off()
@@ -212,16 +263,106 @@ for(j in 1:length(group.order)) {
     temp.dat <- models.list[[i]]
     group.temp <- temp.dat[1, temp.dat[rownames(temp.dat) == group.order[j],]==1]
     group.temp <- group.temp[!is.na(group.temp)]   # *rnorm(1, 1)
-    points(x=i, y=mean(unlist(group.temp)), col=colours[i], pch=16)
-    lines(x=rep(i, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=col.trans[i])
+    points(x=i, y=mean(unlist(group.temp)), col=coloursForTheseModels[i], pch=16)
+    lines(x=rep(i, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=coloursForTheseModels.transparent[i])
   }
 }
 
 plot(x=1, y=1, col="white", axes=F, xlim=c(1, length(group.order)),
      ylim=c(ymin, ymax), xlab="", ylab="")
-legend("topleft", col=colours, bty="n", pch=rep(16, num.models),
-       legend=regionNames, cex=1.2)
+legend("topleft", col=coloursForTheseModels, bty="n", pch=rep(16, num.models),
+       legend = simpleregionNamesForTheseModels, cex=1.2)
 
 dev.off()
+
+
+#-------------
+#  Effect Size Plot
+#----------
+
+yminEffectSize <- 0.5
+ymaxEffectSize <- 1.5
+
+ResponseRatioPerModel <- matrix(nrow=1,ncol = num.models)
+LnResponseRatioPerModel <- matrix(nrow=1,ncol = num.models)
+
+pdf(paste("EffectSizePlot_", thisRunName, ".pdf", sep=""), width=20, height=8.5)
+par(oma=c(4,0,0,0))
+par(mar=c(6.1, 5.1, 1, 2.1))
+
+plot(x=1, y=1, col="white", axes=F, xlim=c(1, xmax),ylim=c(yminEffectSize,ymaxEffectSize), xlab="", ylab="Response ratio",cex.lab =2 )
+axis(2, las=1)
+text(x=x.locations-(num.models/2), y= yminEffectSize-0.1, lab=names[1:11], xpd=T, srt=25, adj=.9,cex=1.5)
+lines(x=c(0.5,xmax), y=c(0,0))
+abline(v=x.locations+.5)
+abline(h=1)
+
+
+xLocationsForBar <- (x.locations-(num.models/2))
+
+counter=0
+for(j in 1:length(group.order)) {
+  for(i in 1:num.models) {
+    counter=counter+1
+    temp.dat <- models.list[[i]]
+    group.temp <- temp.dat[1, temp.dat[rownames(temp.dat) == group.order[j],]==1]
+    group.temp <- group.temp[!is.na(group.temp)]  #   *rnorm(1, 1)
+    
+    ResponseRatioPerModel[i] <- mean(unlist(group.temp))+1  # MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
+    LnResponseRatioPerModel[i] <- log(mean(unlist(group.temp))+1)  # MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
+    
+    print(regionNames[i])
+    print(LnResponseRatioPerModel[i])
+    
+    points(x= xLocationsForBar[j], y= ResponseRatioPerModel[i], col=coloursForTheseModels[i], pch=16,cex=2.5)
+     # lines(x=rep(counter, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=coloursForTheseModels.transparent[i])
+     
+     print((ResponseRatioPerModel[i] < yminEffectSize) )
+     print((ResponseRatioPerModel[i] ) )
+     print(( yminEffectSize) )
+     
+    if (!is.na( ResponseRatioPerModel[i] ) && (ResponseRatioPerModel[i] < yminEffectSize))
+    {
+     text(x = counter  , y = 1.1*yminEffectSize, lab = toString(round(ResponseRatioPerModel[i],digits=1)), col=coloursForTheseModels[i],cex=1.1,srt=90 )
+    }
+       if (!is.na( ResponseRatioPerModel[i] ) && (ResponseRatioPerModel[i] > ymaxEffectSize))
+        {
+         text(x = counter  , y = 0.9*ymaxEffectSize, lab = toString( round(ResponseRatioPerModel[i],digits=1)), col=coloursForTheseModels[i],cex=1.1,srt=90 )
+       }
+    
+  } # end loop over models 
+  
+    # Add square point for geometric mean
+   points(x= xLocationsForBar[j], y= exp(mean(log(ResponseRatioPerModel),na.rm=TRUE)),  pch=0,col = "black",cex=3.5)
+    
+   #points(x= xLocationsForBar[j], y= mean(ResponseRatioPerModel,na.rm = TRUE),  pch=0,col = "black",cex=3.5)
+   
+   geommeanResponseOverModels[j] <- exp(mean(log(ResponseRatioPerModel),na.rm=TRUE))
+   
+  
+} # end loopover groups
+
+legend("topleft", col=coloursForTheseModels[1:num.models], bty="n", pch=c(19,19),
+       legend = simpleregionNamesForTheseModels, cex=1)
+
+dev.off()
+
+  
+#   meanLnResponseRatioAllModels <- mean(LnResponseRatioPerModel,na.rm=TRUE)
+#   points(x=counter, y=  meanLnResponseRatioAllModels, pch=16)
+#   #lines(x=rep(j, 2), y=c(max(LnResponseRatioPerModel,na.rm=TRUE), min(LnResponseRatioPerModel,na.rm=TRUE)), lwd=6, col=col.trans[i])
+
+
+
+#Isaac output text for Gavin
+
+
+write.csv(meanResponsePerModel, file = paste("meanResponsePerModel_", thisRunName, ".csv", sep=""))   
+write.csv(cvResponsePerModel, file = paste("cvResponsePerModel_", thisRunName, ".csv", sep=""))   
+write.csv(geommeanResponseOverModels, file = paste("geommeanResponsePerModel_", thisRunName, ".csv", sep=""))   
+
+
+
+
 
 } # end function

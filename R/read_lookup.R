@@ -25,8 +25,8 @@ read_lookup <- function(lookupfile)
 }
 
 #Example
-lookupfile <- file.path("~","Atlantis","r4atlantis","common_scenarios_analysis","CalCu_BasicInfo.csv")
-lookup <- read_lookup(lookupfile)
+#lookupfile <- file.path("~","Atlantis","r4atlantis","common_scenarios_analysis","CalCu_BasicInfo.csv")
+#lookup <- read_lookup(lookupfile)
 
 
 
