@@ -185,11 +185,13 @@ group.order <- c("IsMammal", "IsBird", "IsShark", "IsDemersal", "IsPelagic",
 
 
 
-
 png(paste("AllInOnePlot_", thisRunName, ".png", sep=""),width=20,height=8.5,units="in",res=72)   #,width=10, height = 4.5 ) # 20 8.5
 #jpeg(paste("AllInOnePlot_", thisRunName, ".jpeg", sep=""),units = "in", width=20 , height=8.5) # 20 8.5
+#par(oma=c(2,0,0,0))
 par(oma=c(4,0,0,0))
+#par(mar=c(2.6, 2.1, 0.5, 1.1))
 par(mar=c(5.1, 4.1, 1, 2.1))
+
 
 #Isaac output text for Gavin
 meanResponsePerModel <- matrix(nrow = num.models, ncol = length(group.order)) 
@@ -246,7 +248,7 @@ dev.off()
 #--------------------------
 
 png(paste("PanelPlot_", thisRunName, ".png", sep=""), width=10, height=8,units="in",res=72)
-par(oma=c(0,0,0,0))
+par(oma=c(0,0,0,0),width=10,height=8)
 par(mar=c(1.1, 3.1, 1, 2.1))
 #"IsJellyfish", "IsForageFish", "IsKrill", "IsPiscivore", "1"))
 par(mfrow=c(3,4))
