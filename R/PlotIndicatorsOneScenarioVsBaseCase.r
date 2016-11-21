@@ -1,5 +1,5 @@
 PlotIndicatorsOneScenarioVsBaseCase <- function(thisRunName = "OA_01", regionNames = list("CalCu_","GoMex_","NOBAtestONLY_", "NEUSFixedF_", "GuamAtlantis_","AEEC_", "AustSE_"),
-  dir = "C:/Users/Isaac.Kaplan/Documents/Atlantis/AtlantisSummit/CommonScenarios/CalCurrentSUMMITallcommonscenarios/ModelComparison/ModelComparison/CommonScenarios", yr.start= 40,yr.end=49)
+  dir = "C:/Users/Isaac.Kaplan/Documents/Atlantis/AtlantisSummit/CommonScenarios/CalCurrentSUMMITallcommonscenarios/ModelComparison/ModelComparison/CommonScenarios", yr.start= 40,yr.end=49,autodetectAxisLimits=FALSE)
 
 {
 
@@ -277,14 +277,14 @@ coloursForTheseModels.transparent <- paste(coloursForTheseModels, 90, sep="")
 ind_choose3 <- c("Dempelfish","Dembio_pp", "Dempel", "Bio_pp",  "Mtlbio", "Pelbio_pp",  "Predfish_prop")
 plot_indicators(ind=indicators[,c("Time",ind_choose3)],
                 axis_labels= c("Demersal/ pel fish", "Demersal biomass/ PP", "Demersal/pelagic ",  "Biomass/PP", "MTL biomass", "Pelagic biomass/PP", "Predfish proportion" ),
-                legend_labels = simpleregionNamesForTheseModels,plotfile=paste("IndicatorPlotEcology_", thisRunName, ".pdf", sep=""), standardized = TRUE, colvec = coloursForTheseModels)
+                legend_labels = simpleregionNamesForTheseModels,plotfile=paste("IndicatorPlotEcology_", thisRunName, ".png", sep=""), standardized = TRUE, colvec = coloursForTheseModels,autodetectAxisLimits=autodetectAxisLimits)
 
 
 # PLOT Catch and Exploitation Rate INDICATORS THAT ARE NOT SIMPLY REFLECTING CHANGES IN BIOMASS
 ind_choose4 <- c("Totcat","Fishcat","Value","Exprate", "Fish_exprate", "Demcat", "Pelcat","Mtlcat","Cat_pp", "Demcat_pp", "Pelcat_pp",   "Prop_abovetarget"  )
 plot_indicators(ind=indicators[,c("Time",ind_choose4)],
                 axis_labels= c( "Total catch","Fish catch","Value", "Exploitation rate","Fish exp rate", "Demersal catch", "Pelagic catch", "MTL catch", "Catch /PP", "Demersal catch/ PP", "Pelagic catch/ PP",  "Prop above target" ),
-                legend_labels = simpleregionNamesForTheseModels,plotfile=paste("IndicatorPlotFishery_", thisRunName, ".pdf", sep=""), standardized = TRUE, colvec = coloursForTheseModels)
+                legend_labels = simpleregionNamesForTheseModels,plotfile=paste("IndicatorPlotFishery_", thisRunName, ".png", sep=""), standardized = TRUE, colvec = coloursForTheseModels,autodetectAxisLimits=autodetectAxisLimits)
 
 
 
@@ -292,7 +292,7 @@ plot_indicators(ind=indicators[,c("Time",ind_choose4)],
 #ind_choose5 <- c("Bird","Mammal","Prop_belowtarget","Pelcat","Pelcat_pp","Value","Dempel","Pelbio_pp" )
 #plot_indicators(ind=indicators[,c("Time",ind_choose5)],
 #                axis_labels= c( "Birds","Mammals","Prop. depleted","Pelagic catch","Pel.catch/PP","Revenue","Demersal:Pelagic","Pel.bio/PP" ),
-#                legend_labels = simpleregionNamesForTheseModels,plotfile=paste("IndicatorPlotForageConsider_", thisRunName, ".pdf", sep=""), standardized = TRUE, colvec = coloursForTheseModels)
+#                legend_labels = simpleregionNamesForTheseModels,plotfile=paste("IndicatorPlotForageConsider_", thisRunName, ".png", sep=""), standardized = TRUE, colvec = coloursForTheseModels)
 
 
 #  ONLY for California Current sardine test: 
@@ -301,7 +301,7 @@ plot_indicators(ind=indicators[,c("Time",ind_choose4)],
 #ind_choose5 <- c("Bird","Mammal","Prop_belowtarget","Pelcat","Pelcat_pp","Value","Dempel","Pelbio_pp","Foragefish","Sardine" )
 #plot_indicators(ind=indicators[,c("Time",ind_choose5)],
 #                axis_labels= c( "Birds","Mammals","Prop.\nDepleted\n40%","Pelagic catch","Pel.catch/PP","Revenue"," Demersal/\n Pelagic","Pel.bio/PP","Forage fish","Sardine" ),
-#                legend_labels=regionNames,plotfile=paste("IndicatorPlotForageConsider2_", thisRunName, ".pdf", sep=""), standardized = FALSE, colvec = coloursForTheseModels)
+#                legend_labels=regionNames,plotfile=paste("IndicatorPlotForageConsider2_", thisRunName, ".png", sep=""), standardized = FALSE, colvec = coloursForTheseModels)
 
 
 

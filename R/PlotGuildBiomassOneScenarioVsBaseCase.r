@@ -186,7 +186,8 @@ group.order <- c("IsMammal", "IsBird", "IsShark", "IsDemersal", "IsPelagic",
 
 
 
-pdf(paste("AllInOnePlot_", thisRunName, ".pdf", sep=""), width=20, height=8.5)
+png(paste("AllInOnePlot_", thisRunName, ".png", sep=""),width=20,height=8.5,units="in",res=72)   #,width=10, height = 4.5 ) # 20 8.5
+#jpeg(paste("AllInOnePlot_", thisRunName, ".jpeg", sep=""),units = "in", width=20 , height=8.5) # 20 8.5
 par(oma=c(4,0,0,0))
 par(mar=c(5.1, 4.1, 1, 2.1))
 
@@ -244,7 +245,7 @@ dev.off()
 # Writing plots to PDFs :   Panel Plot
 #--------------------------
 
-pdf(paste("PanelPlot_", thisRunName, ".pdf", sep=""), width=10, height=8)
+png(paste("PanelPlot_", thisRunName, ".png", sep=""), width=10, height=8,units="in",res=72)
 par(oma=c(0,0,0,0))
 par(mar=c(1.1, 3.1, 1, 2.1))
 #"IsJellyfish", "IsForageFish", "IsKrill", "IsPiscivore", "1"))
@@ -280,17 +281,17 @@ dev.off()
 #  Effect Size Plot
 #----------
 
-yminEffectSize <- 0.5
-ymaxEffectSize <- 1.5
+yminEffectSize <- (- 0.5)
+ymaxEffectSize <- 0.5
 
 ResponseRatioPerModel <- matrix(nrow=1,ncol = num.models)
 LnResponseRatioPerModel <- matrix(nrow=1,ncol = num.models)
 
-pdf(paste("EffectSizePlot_", thisRunName, ".pdf", sep=""), width=20, height=8.5)
+png(paste("EffectSizePlot_", thisRunName, ".png", sep=""), width=20, height=8.5,units="in",res=72)
 par(oma=c(4,0,0,0))
 par(mar=c(6.1, 5.1, 1, 2.1))
 
-plot(x=1, y=1, col="white", axes=F, xlim=c(1, xmax),ylim=c(yminEffectSize,ymaxEffectSize), xlab="", ylab="Response ratio",cex.lab =2 )
+plot(x=1, y=1, col="white", axes=F, xlim=c(1, xmax),ylim=c(yminEffectSize,ymaxEffectSize), xlab="", ylab="Biomass response",cex.lab =2 )
 axis(2, las=1)
 text(x=x.locations-(num.models/2), y= yminEffectSize-0.1, lab=names[1:11], xpd=T, srt=25, adj=.9,cex=1.5)
 lines(x=c(0.5,xmax), y=c(0,0))
