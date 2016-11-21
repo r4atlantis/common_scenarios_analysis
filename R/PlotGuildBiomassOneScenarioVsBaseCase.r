@@ -298,7 +298,7 @@ axis(2, las=1)
 text(x=x.locations-(num.models/2), y= yminEffectSize-0.1, lab=names[1:11], xpd=T, srt=25, adj=.9,cex=1.5)
 lines(x=c(0.5,xmax), y=c(0,0))
 abline(v=x.locations+.5)
-abline(h=1)
+abline(h=0)
 
 
 xLocationsForBar <- (x.locations-(num.models/2))
