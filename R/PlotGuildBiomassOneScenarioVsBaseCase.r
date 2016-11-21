@@ -364,6 +364,129 @@ write.csv(meanResponsePerModel, file = paste("meanResponsePerModel_", thisRunNam
 write.csv(cvResponsePerModel, file = paste("cvResponsePerModel_", thisRunName, ".csv", sep=""))   
 write.csv(geommeanResponseOverModels, file = paste("geommeanResponsePerModel_", thisRunName, ".csv", sep=""))   
 
+#-----------
+#
+#   Plot Violin plots
+#----------------
+
+
+
+yminEffectSize <- (-1.0)
+ymaxEffectSize <- 1.0
+vioplotAllOutputs <- matrix(nrow = 5, ncol = length(group.order))
+
+
+png(paste("ViolinPlot_", thisRunName, ".png", sep=""), width=20, height=8.5,units="in",res=72)
+par(oma=c(4,0,0,0))
+par(mar=c(6.1, 5.1, 1, 2.1))
+
+
+par(mfrow=c(2,1))
+
+plot(x=1, y=1, col="white", axes=F, xlim=c(1, xmax),ylim=c(yminEffectSize,ymaxEffectSize), xlab="", ylab="Biomass response",cex.lab =2 )
+axis(2, las=1)
+#text(x=x.locations-(num.models/2), y= yminEffectSize-0.1, lab=names[1:11], xpd=T, srt=25, adj=.9,cex=1.5)
+lines(x=c(0.5,xmax), y=c(0,0))
+abline(v=x.locations+.5)
+abline(h=0)
+
+
+xLocationsForBar <- (x.locations-(num.models/2))
+
+counter=0
+for(j in 1:length(group.order)) {
+
+allResponsesThisGuildAllModels <- numeric()
+
+  for(i in 1:num.models) {
+    counter=counter+1
+    temp.dat <- models.list[[i]]
+    group.temp <- temp.dat[1, temp.dat[rownames(temp.dat) == group.order[j],]==1]
+    group.temp <- group.temp[!is.na(group.temp)]  #   *rnorm(1, 1)
+    
+    allResponsesThisGuildAllModels <- c(allResponsesThisGuildAllModels,unlist(group.temp))  # if taking log MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
+
+    
+  } # end loop over models 
+  
+    vioplotOut<- vioplot(allResponsesThisGuildAllModels, at= xLocationsForBar[j],add=TRUE,wex=4)
+    
+  
+    vioplotAllOutputs[1,j]<- vioplotOut$upper
+    vioplotAllOutputs[2,j]<-vioplotOut$lower
+    vioplotAllOutputs[3,j]<-vioplotOut$median
+    vioplotAllOutputs[4,j]<-vioplotOut$q1
+    vioplotAllOutputs[5,j]<-vioplotOut$q3
+ 
+  
+} # end loopover groups
+
+colnames(vioplotAllOutputs)<- c("Mamma","Seabird","Shark","Demersal fish","Pelagic fish","Squid","Filter Feeder","Epibenthos","Zooplankton","Primary producer","Infauna")
+rownames(vioplotAllOutputs) <- c("95thpctile","5thpctile","median","1stquartile","3rdquartile" )   
+write.csv(vioplotAllOutputs, file = paste("vioplotAllOutputs_", thisRunName, ".csv", sep=""))            #  , row.names = c("95thpctile","5thpctile","median","1stquartile","3rdquartile" ) )  
+
+#legend("topleft", col=coloursForTheseModels[1:num.models], bty="n", pch=c(19,19),
+#       legend = simpleregionNamesForTheseModels, cex=1)
+
+#-------------
+plot(x=1, y=1, col="white", axes=F, xlim=c(1, xmax),ylim=c(yminEffectSize,ymaxEffectSize), xlab="", ylab="Biomass response",cex.lab =2 )
+axis(2, las=1)
+text(x=x.locations-(num.models/2), y= yminEffectSize-0.1, lab=names[1:11], xpd=T, srt=25, adj=.9,cex=1.5)
+lines(x=c(0.5,xmax), y=c(0,0))
+abline(v=x.locations+.5)
+abline(h=0)
+
+
+xLocationsForBar <- (x.locations-(num.models/2))
+
+counter=0
+for(j in 1:length(group.order)) {
+
+allResponsesThisGuildAllModels <- numeric()
+
+  for(i in 1:num.models) {
+    counter=counter+1
+    temp.dat <- models.list[[i]]
+    group.temp <- temp.dat[1, temp.dat[rownames(temp.dat) == group.order[j],]==1]
+    group.temp <- group.temp[!is.na(group.temp)]  #   *rnorm(1, 1)
+    
+    allResponsesThisGuildAllModels <- c(allResponsesThisGuildAllModels,unlist(group.temp))  # if taking log MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
+
+    #-------
+        group.temp <- group.temp[!is.na(group.temp)]  #   *rnorm(1, 1)
+        points(x=counter, y=mean(unlist(group.temp)), col="black", pch=16,cex=1.5)
+        numSppAsPoints <- length(unlist(group.temp))
+        points(x=rep(counter,numSppAsPoints),y=unlist(group.temp),col=coloursForTheseModels.transparent[i],pch= 17)
+        lines(x=rep(counter, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=coloursForTheseModels.transparent[i])
+        
+            if (!is.na( unlist(group.temp)) && ( min(group.temp) < ymin))
+                 {
+                  text(x = counter  , y = 0.9*ymin, lab = toString(round(min(group.temp),digits=1)), col="black",cex=1.1, srt=90 )
+                 }
+               if (!is.na( unlist(group.temp)) && (max(group.temp) > ymax))
+                 {
+                 text(x = counter  , y = 0.9*ymax, lab = toString( round(max(group.temp),digits=1)), col="black",cex=1.1, srt=90 )
+             }
+    #-------
+
+
+    
+  } # end loop over models 
+  
+  
+ 
+  
+} # end loopover groups
+
+legend("topleft", col=coloursForTheseModels[1:num.models], bty="n", pch=c(19,19),
+       legend = simpleregionNamesForTheseModels, cex=1)
+
+
+#---------------
+
+
+dev.off()
+
 
 
 
