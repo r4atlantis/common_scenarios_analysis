@@ -311,11 +311,11 @@ for(j in 1:length(group.order)) {
     group.temp <- temp.dat[1, temp.dat[rownames(temp.dat) == group.order[j],]==1]
     group.temp <- group.temp[!is.na(group.temp)]  #   *rnorm(1, 1)
     
-    ResponseRatioPerModel[i] <- mean(unlist(group.temp))+1  # MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
-    LnResponseRatioPerModel[i] <- log(mean(unlist(group.temp))+1)  # MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
+    ResponseRatioPerModel[i] <- mean(unlist(group.temp))  # if taking log MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
+    #LnResponseRatioPerModel[i] <- log(mean(unlist(group.temp))+1)  # MUST ADD ONE BECAUSE A VALUE OF 0 FROM OTHER PLOTS MEANS NO EFFECT, WHICH IS A RATIO OF 1
     
     print(regionNames[i])
-    print(LnResponseRatioPerModel[i])
+    #print(LnResponseRatioPerModel[i])
     
     points(x= xLocationsForBar[j], y= ResponseRatioPerModel[i], col=coloursForTheseModels[i], pch=16,cex=2.5)
      # lines(x=rep(counter, 2), y=c(max(group.temp), min(group.temp)), lwd=6, col=coloursForTheseModels.transparent[i])
@@ -326,7 +326,7 @@ for(j in 1:length(group.order)) {
      
     if (!is.na( ResponseRatioPerModel[i] ) && (ResponseRatioPerModel[i] < yminEffectSize))
     {
-     text(x = counter  , y = 1.1*yminEffectSize, lab = toString(round(ResponseRatioPerModel[i],digits=1)), col=coloursForTheseModels[i],cex=1.1,srt=90 )
+     text(x = counter  , y = 0.9*yminEffectSize, lab = toString(round(ResponseRatioPerModel[i],digits=1)), col=coloursForTheseModels[i],cex=1.1,srt=90 )
     }
        if (!is.na( ResponseRatioPerModel[i] ) && (ResponseRatioPerModel[i] > ymaxEffectSize))
         {
