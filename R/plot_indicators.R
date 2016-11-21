@@ -83,8 +83,8 @@ plot_indicators <- function(ind,
                             legend_labels=paste("Scenario ",1:3,sep=""),
                             axis_labels=1:8,
                             plotfile='indicator_plot.pdf',
-                            standardized=FALSE, ...) {
 
+                            standardized=FALSE, autodetectAxisLimits=FALSE...) {
 #throw warning if Isaac forgets to use a color vector the length of his scenarios
   if (length(colvec)<nrow(ind)) {
     print("YOU SUPPLIED A COLOR VECTOR THAT IS SHORTER THAN THE NUMBER OF SCNEARIOS")
@@ -102,12 +102,24 @@ plot_indicators <- function(ind,
   #make MTL indicators minimum of 3
   pick <- grep("Mtl",names(ind)[-1])
   aa0[pick] <- 2
+  
+  # IK hack:
+  numOf0pt5Segments <- ceiling(max(ind,na.rm=TRUE)/0.5)
+  
   if (standardized) {
     aa1[] <- 2.0
     aa0[] <- 0
     aa3 <- rep(1,length(aa1))
   }
-  #combine to
+  
+  if (autodetectAxisLimits)  #IK HACK to make it automatically fit plot to axis limits of radar
+  {
+     aa1[] <- 0.5*numOf0pt5Segments   
+  }
+ 
+  
+  
+  #combine to 
   new_dat <- as.data.frame(rbind(aa1,aa0,aa2))
   lwd_use <- rep(4,nrow(ind))
   col_use <- colvec
@@ -122,15 +134,32 @@ plot_indicators <- function(ind,
   axis_labels <- rep(axis_labels,length=ncol(new_dat))
   #legend_labels <- ind[,1]
   legend_labels <- rep(legend_labels,length=nrow(ind))
-
-  pdf(file=plotfile)
+  
+   if (autodetectAxisLimits)
+   {
+     plotfile <- sub("IndicatorPlot","IndicatorPlotAutoAxis", plotfile)
+   }
+  
+  png(file=plotfile)
   par(mar=c(0,0,3,0),oma=c(0,0,0,0))
 
+
+
+if (autodetectAxisLimits)
+{
     fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
-                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,axistype=4,seg=4, caxislabels=c("0","0.5","1","1.5","2"))  #seg=5) #
+                   ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,axistype=4,seg= numOf0pt5Segments , caxislabels = as.character(seq(0, 0.5*numOf0pt5Segments ,0.5)))  #seg=5) #
+} else  
+{     # IF want All axes set to 2 as limit
 
-     write.csv(new_dat, file = paste0(plotfile, ".csv"))
+fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),xlim=c(-1.5,2),
+               ylim=c(-1.5,1.5),pcol=col_use,plty=1,vlabels=axis_labels,axistype=4,seg=4, caxislabels=c("0","0.5","1","1.5","2"))
 
+
+}
+                   
+     write.csv(new_dat, file = paste(plotfile, ".csv"))              
+             
 #text(0.07,0.065,"-1",cex=2)
 #text(0.07,0.57,"0",cex=2)
 #text(0.07,1.035,"1",cex=2)
@@ -146,8 +175,8 @@ plot_indicators <- function(ind,
 
 
   # playing with raphaelcode: fmsb::radarchart(new_dat,pty=32,plwd=lwd_use,cglcol=gray(0.1),
-     #            pcol=col_use,plty=1,vlabels=axis_labels,axistype=0, seg=2,centerzero=T ,caxislabels=c("-1","0","1"))
-
+     #            pcol=col_use,plty=1,vlabels=axis_labels,axistype=0, seg=2,centerzero=T ,caxislabels=c("-1","0","1"))                   
+  
   legend(0.7,1.6,legend=legend_labels,lwd=3,col=colvec,cex=0.8,bty='n')
   #mtext(text="(a) Mortality scenarios",side=3,adj=0,line=0,cex=1.5)
   dev.off()
