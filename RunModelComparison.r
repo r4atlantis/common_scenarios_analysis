@@ -3,30 +3,33 @@
  # "CC_add_35"
 
 
+# Things to do following Sept 27 2016:
+# Remove AEEC english channel due to discard problems. 
+# Verified that NOBA runs for fmsy are not used, but also that NOBA runs for Fcur are not available. 
 
 
-#  Things to do following June 20:
-#   DONE:   Change GulfMexico corals to filter feeders.
+#  Things to do following June 20:  
+#   DONE:   Change GulfMexico corals to filter feeders. 
 #   DONE: Use new NOBA BasicInfo.csv
-#   DONE: Replace Guam with May 26 output.
+#   DONE: Replace Guam with May 26 output. 
 #   DONE: Add in Chesapeake data
 #   DONE: #   Use consistent color
 #   DONE: Eliminate indicators that just represent Biomass
 #   DONE,  Add labels on indictors axes
 #   DONE: Update CalCurrent BasicInfo.csv
 
-# Careful to see if color schemes on indicator plots match labels.
-#Consider eliminating poorly specified indicators, like Pisciovre or Predatory Fish
+# Careful to see if color schemes on indicator plots match labels. 
+#Consider eliminating poorly specified indicators, like Pisciovre or Predatory Fish 
 
 #----------------
-# DONE: Ln Resposne Ratio:  contract y axis, then rotate axes.
-#  ? PCA on Ln Reesponse Rati.
+# DONE: Ln Resposne Ratio:  contract y axis, then rotate axes. 
+#  ? PCA on Ln Reesponse Rati. 
 #--------
-#  DONE:  Biomass plots:  add pts for individual species.
-#  DONE: Biomass plots:  Indicate when bars exceed limits of y axis.
+#  DONE:  Biomass plots:  add pts for individual species. 
+#  DONE: Biomass plots:  Indicate when bars exceed limits of y axis. 
 #
 #
-# check   Fcurr_all_1  -- use this to check base case.
+# check   Fcurr_all_1  -- use this to check base case. 
 #
 #--------------
 
@@ -56,7 +59,8 @@
  # "mpa_50"
   # "mpa_10"
 
-ignore <- sapply(dir("R", pattern = "\\.R|\\.r", full.names = TRUE), source)
+source("R\\calc.pH.effect.R")
+source("R\\PlotGuildBiomassOneScenarioVsBaseCase.r")
 
 # PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CalCu_", "GOC_"),yr.start=40,yr.end=49)
 #  PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CalCu_", "GOC_"),yr.start=40,yr.end=49)
@@ -64,17 +68,22 @@ ignore <- sapply(dir("R", pattern = "\\.R|\\.r", full.names = TRUE), source)
 
 #-------------------
 # ocean acidification
-PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CAM_", "CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_","NEUSDyn_","GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"))
-PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "OA_005", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_", "NEUSDyn_","GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"))
+PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CAM_", "CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_","NEUSDyn_","GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
+PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "OA_005", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_", "NEUSDyn_","GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
 
-#
-PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_","NEUSFixedF_","NEUSDyn_", "GuamAtlantis_", "AEEC_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
-PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_005", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_","NEUSFixedF_","NEUSDyn_", "GuamAtlantis_", "AEEC_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+# 
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_","NEUSFixedF_","NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_005", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_","NEUSFixedF_","NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+# autodetect axis limits
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_01", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_","NEUSFixedF_","NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49,autodetectAxisLimits = TRUE)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "OA_005", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_","NEUSFixedF_","NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49,autodetectAxisLimits = TRUE)
+
+
 
 
 #-----------------
 # Seabirds: looks like NEUS and AustSE might not be driving birds to decline:
-# CAM chesapeake and AEEC adn  Guam does not include SB seabird runs.
+# CAM chesapeake and AEEC adn  Guam does not include SB seabird runs. 
 
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "SB_15", regionNames = list("CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_", "AustSE_","AustSE_DynEffort_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "SB_3", regionNames = list("CalCu_","GoMex_","GOC_","NOBA_", "NEUSFixedF_",  "AustSE_","AustSE_DynEffort_"))
@@ -85,14 +94,14 @@ PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "SB_3", regionNames = list("Ca
 
 
 #--------------------------------
-# Fishign relative to Current day:
+# Fishign relative to Current day: 
 # Fcurr_all
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_all_05", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_all_0", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_all_1", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_all_2", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 
-#
+# 
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_all_05", regionNames = list("CAM_", "CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_all_0", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_","GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_all_1", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_","GuamAtlantis_", "AustSE_"),yr.start=40,yr.end=49)
@@ -103,14 +112,14 @@ PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_all_2", regionNames = li
 
 
 
-# FCUR DEMERSAL.
-# Note:  CAM_Fcur_dem_05_BiomIndx.txt': No such file or directory
+# FCUR DEMERSAL. 
+# Note:  CAM_Fcur_dem_05_BiomIndx.txt': No such file or directory  
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_dem_05", regionNames = list("CalCu_","GoMex_","GOC_","NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_dem_0", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_dem_2", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 
-# # FCUR DEMERSAL.
-# Note 'CAM_Fcur_dem_05_BiomIndx.txt': No such file or directory
+# # FCUR DEMERSAL. 
+# Note 'CAM_Fcur_dem_05_BiomIndx.txt': No such file or directory    
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_dem_05", regionNames = list("CalCu_","GoMex_","GOC_","NEUSFixedF_", "GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_dem_0", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_dem_2", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
@@ -150,7 +159,7 @@ PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_inV_05", regionNames =
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_inV_0", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "Fcur_inV_2", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_", "AustSE_"))
 
-#
+# 
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_inV_05", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_","GuamAtlantis_", "AustSE_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_inV_0", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_inV_2", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSFixedF_", "GuamAtlantis_","AustSE_"),yr.start=40,yr.end=49)
@@ -160,15 +169,20 @@ PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "Fcur_inV_2", regionNames = li
 #--------------------------------------
 # MPAs
 
-PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "mpa_10", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"))
-PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "mpa_25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"))
-PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"))
+PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "mpa_10", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
+PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "mpa_25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
+PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
 
-# SKIPPING GUAM, NOBA, AND AEEC FOR NOW FOR SOME FORMATTING REASON:
+# SKIPPING GUAM, NOBA, AND AEEC FOR NOW FOR SOME FORMATTING REASON: 
 
-PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_10", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
-PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
-PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_","AEEC_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_10", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
+# Auto detect limit axes: 
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_10", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49,autodetectAxisLimits = TRUE)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49,autodetectAxisLimits = TRUE)
+PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49,autodetectAxisLimits = TRUE)
+
 #PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("CAM_","CalCu_","GoMex_","GOC_", "NEUSDyn_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
 
 #-------------------------
@@ -178,7 +192,7 @@ PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "mpa_50", regionNames = list("
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "CC_add_2or25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
 PlotGuildBiomassOneScenarioVsBaseCase(thisRunName = "CC_add_3or35", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"))
 
-# skipping guam and noba for now:
+# skipping guam and noba for now: 
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "CC_add_2or25", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
 PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "CC_add_3or35", regionNames = list("CAM_","CalCu_","GoMex_","GOC_","NOBA_", "NEUSDyn_", "GuamAtlantis_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
 #PlotIndicatorsOneScenarioVsBaseCase(thisRunName = "CC_add_3or35", regionNames = list("CalCu_","GoMex_","GOC_", "NEUSDyn_", "AustSE_","AustSE_DynEffort_"),yr.start=40,yr.end=49)
