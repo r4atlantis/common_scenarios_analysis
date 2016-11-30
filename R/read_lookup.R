@@ -15,6 +15,8 @@
 
 read_lookup <- function(lookupfile)
 {
+  # Add a check to make sure that the file exists
+  if (!file.exists(lookupfile)) stop(lookupfile, "does not exist")
   x <- read.csv(lookupfile,header=FALSE,stringsAsFactors=FALSE)
   labels <- x[,1]
   read.lookup <- as.data.frame(t(x[,-1]))
