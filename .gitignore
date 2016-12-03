@@ -2,3 +2,4 @@
 # Use a forward slash for all directory locations
 
 *.zip
+references/**
