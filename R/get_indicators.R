@@ -31,16 +31,16 @@ get_indicators <- function(bio,cat,lookup)
   
 
   #turn biomass and catch data into long form
-  bio_use <- reshape(bio,direction="long",varying=list(2:ncol(bio)),idvar="Time")
-  bio_use$time <- names(bio[,-1])[bio_use$time]    
-  rownames(bio_use) <- NULL
-  names(bio_use) <- c("Time","Code","Biomass")
+  bio_use <- reshape(bio, direction = "long",
+    varying = list(2:ncol(bio)), idvar = "Time", v.names = "Biomass",
+    timevar = "Code", times = colnames(bio)[-1],
+    new.row.names = sequence(prod(length(colnames(bio)[-1]), NROW(bio))))
 
-  cat_use <- reshape(cat,direction="long",varying=list(2:ncol(cat)),idvar="Time")
-  cat_use$time <- names(cat[,-1])[cat_use$time]    
-  rownames(cat_use) <- NULL
-  names(cat_use) <- c("Time","Code","Catch")
-  
+  cat_use <- reshape(cat, direction = "long",
+    varying = list(2:ncol(cat)), idvar = "Time", v.names = "Catch",
+    timevar = "Code", times = colnames(cat)[-1],
+    new.row.names = sequence(prod(length(colnames(cat)[-1]), NROW(cat))))
+
   #merge dataframes
   results <- merge(bio_use,cat_use,by=c("Time","Code"),all.x=TRUE)
   results <- merge(results,lookup,by.x="Code",by.y="Atlantis species code",all.x=TRUE)
