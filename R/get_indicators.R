@@ -45,9 +45,9 @@ get_indicators <- function(bio,cat,lookup)
   results <- merge(bio_use,cat_use,by=c("Time","Code"),all.x=TRUE)
   results <- merge(results,lookup,by.x="Code",by.y="Atlantis species code",all.x=TRUE)
   #make some variables easier to reference
-  names(results)[7] <- "Bzero"
-  names(results)[8] <- "Btarget"
-  
+  colnames(results)[grep("VirginBiomass", colnames(results))] <- "Bzero"
+  colnames(results)[grep("target reference", colnames(results))] <- "Btarget"
+
   #isfish <- 2:20
   #isTEP <- c(19,21:25)
   #isBio <- c(2:28,30:32)
