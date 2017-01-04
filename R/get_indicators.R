@@ -81,6 +81,9 @@ get_indicators <- function(bio,cat,lookup)
     ind$Prop_belowtarget <- NA
     ind$Foragefish <- NA
     ind$Prop_notoverfished <- NA
+    ind$Bird <- 0
+    ind$Foragefish <- 0
+    ind$Mammal <- 0
 
   #----------------
   # Now fill in indicators
@@ -104,19 +107,15 @@ get_indicators <- function(bio,cat,lookup)
                            sum,na.rm=TRUE)/
     tapply(results$Biomass[results$IsPelagic==1],
            results$Time[results$IsPelagic==1],sum,na.rm=TRUE)
-  
-  ind$Bird <- rep(0,nrow(ind))
+
   if (length(which(results$IsBird==1))>0)
    ind$Bird <- tapply(results$Biomass[results$IsBird==1],
                       results$Time[results$IsBird==1],sum,na.rm=TRUE)
 
-  ind$Foragefish <- rep(0,nrow(ind))
   if (length(which(results$IsForageFish==1))>0)
    ind$Foragefish <- tapply(results$Biomass[results$IsForageFish==1],
                       results$Time[results$IsForageFish==1],sum,na.rm=TRUE)
 
-
-  ind$Mammal <- rep(0,nrow(ind))
   if (length(which(results$IsMammal==1))>0)
    ind$Mammal <- tapply(results$Biomass[results$IsMammal==1],
                         results$Time[results$IsMammal==1],sum,na.rm=TRUE)
