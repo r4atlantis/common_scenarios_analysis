@@ -14,12 +14,6 @@
 
 run_MARSS <- function(data, attributes, indicators) {
 
-  # Missing values should be NA
-  # todo: think about the need to standardize values
-  # (x - mean) / sd
-  # (data - apply(data, 1, mean, na.rm = TRUE)) /
-  # sqrt(apply(data, 1, var, na.rm = TRUE))
-
   # Control variables for the MARSS model
   cntl <- list(allow.degen = FALSE, maxit = 2000,
     safe = TRUE)
@@ -59,6 +53,18 @@ run_MARSS <- function(data, attributes, indicators) {
   # reshape the data
   if (!"Time" %in% colnames(data)) stop("Time needs to be a",
     " column in your data frame.")
+
+  # Missing values should be NA
+  # todo: think about the need to standardize values
+  # (x - mean) / sd
+  # (data - apply(data, 1, mean, na.rm = TRUE)) /
+  # apply(data, 1, sd, na.rm = TRUE)
+  time <- data$Time
+  data <- data[, c("Time", attributes, indicators)]
+  data <- (data - apply(data, 1, mean, na.rm = TRUE)) /
+    apply(data, 1, sd, na.rm = TRUE)
+  data$Time <- time
+
   data <- data[order(data$Time), ]
   data_model <- t(data[, c("Time", combined)])[-1, ]
 
