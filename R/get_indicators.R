@@ -165,8 +165,8 @@ get_indicators <- function(bio,cat,lookup)
                         sum,na.rm=TRUE)
   
   ind$Fish_exprate <- ind$Fishcat / ind$Fishbio
-  
-  if(ind$Fishbio == 0)
+
+  if(max(ind$Fishbio) <= 0)
   {
    stop("Looks like Fishbio == 0, do you really have no fish in your model?")
   }
