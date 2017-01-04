@@ -182,21 +182,14 @@ if (length(which(results$TrophicLevel>=3.5))>0)
   results$Depletion <- results$Biomass / results$Bzero
   results$IsBelowTarget <- rep(0,nrow(results))
   results$IsOverfished <- rep(0,nrow(results))
-  print("deplteion then btarget")
-  print(results$Depletion )  # 0.85, 0.99, etc.
-  print(results$Btarget )  # 0.6 etc. 
   results$IsBelowTarget[results$Depletion<results$Btarget] <- 1 
   results$IsOverfished[results$Depletion<(0.5*results$Btarget)] <- 1 
-print(  " sum(lookup$IsAssessedByFisheriesAssessment) ")
-print(sum(lookup$IsAssessedByFisheriesAssessment) )
 
 if ( sum(lookup$IsAssessedByFisheriesAssessment) > 0)
 {
   ind$Prop_of <- tapply(results$IsOverfished[results$IsAssessedByFisheriesAssessment==1],
                        results$Time[results$IsAssessedByFisheriesAssessment==1],sum,na.rm=TRUE) /
                       sum(lookup$IsAssessedByFisheriesAssessment)
-              print("ind$Prop_of is  ")
-              print(ind$Prop_of)
 }
 
 ind$Prop_belowtarget <-  sum(results$IsBelowTarget)/length( results$IsBelowTarget)
