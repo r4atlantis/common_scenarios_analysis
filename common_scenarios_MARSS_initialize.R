@@ -17,5 +17,6 @@
 ###############################################################################
 #### Source packages and files
 ###############################################################################
-sapply(dir(file.path(dir.main, "R"), full.names = TRUE, pattern = "\\.r|\\.R"),
+ignore <- sapply(
+  dir(file.path(dir.main, "R"), full.names = TRUE, pattern = "\\.r|\\.R"),
   source)
