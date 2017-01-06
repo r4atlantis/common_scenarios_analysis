@@ -2,4 +2,5 @@
 # Use a forward slash for all directory locations
 
 *.zip
+common_scenarios_data/**
 references/**
