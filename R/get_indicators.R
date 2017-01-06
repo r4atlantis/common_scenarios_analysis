@@ -1,19 +1,19 @@
 #' Calculate ecosystem indicators based on Atlantis biomass and catch text file output
 #'
-#' Takes time series of biomass and catch (by species) and returns a 
+#' Takes time series of biomass and catch (by species) and returns a
 #' list of ecosystem indicators, given flags for species groups as detailed
 #' in the return from \code{get_lookup()}.
 
 #' @author Gavin Fay
 
 
-#' @param bio A dataframe of biomass time series, such as that 
+#' @param bio A dataframe of biomass time series, such as that
 #' obtained from reading in \code{BiomIndx.txt}.
-#' @param cat A dataframe of catch time series, such as that 
-#' obtained from reading in \code{Catch.txt}. 
-#' @param lookup A list of flags and summary stats by species. 
+#' @param cat A dataframe of catch time series, such as that
+#' obtained from reading in \code{Catch.txt}.
+#' @param lookup A list of flags and summary stats by species.
 #' This is the list returned from \code{get_lookup()}.
-#' 
+#'
 #' @return Returns a list of time series of ecosystem indicators.
 #'
 #' @examples
@@ -89,11 +89,12 @@ get_indicators <- function(bio,cat,lookup)
   # Now fill in indicators
  ind$Totbio <- tapply(results$Biomass,results$Time,sum,na.rm=TRUE)
   ind$Totcat <- tapply(results$Catch,results$Time,sum,na.rm=TRUE)
-  
+
  if ( sum(lookup$IsTarget) > 0)
-{ 
+{
   ind$Exprate <- ind$Totcat/tapply(results$Biomass[results$IsTarget==1],results$Time[results$IsTarget==1],sum,na.rm=TRUE)
-}  
+}
+
 
   
   ind$Fishbio <- tapply(results$Biomass[results$IsFish==1],results$Time[results$IsFish==1],sum,na.rm=TRUE)
@@ -119,51 +120,51 @@ get_indicators <- function(bio,cat,lookup)
   if (length(which(results$IsMammal==1))>0)
    ind$Mammal <- tapply(results$Biomass[results$IsMammal==1],
                         results$Time[results$IsMammal==1],sum,na.rm=TRUE)
-  
-  # might need some additional customization here, perhaps a new flag, 
+
+  # might need some additional customization here, perhaps a new flag,
   # some will have some shark species or possibly even endangered fish
   ind$Teps <- ind$Bird+ind$Mammal
   if (length(which(results$Code=='REP'))>0)
     ind$Teps <- ind$Teps + tapply(results$Biomass[results$Code=='REP'],
                                   results$Time[results$Code=='REP'],sum,na.rm=TRUE)
-  
+
   ind$Demcat <- tapply(results$Catch[results$IsDemersal==1],
                        results$Time[results$IsDemersal==1],sum,na.rm=TRUE)
-  
+
   ind$Pelcat <- tapply(results$Catch[results$IsPelagic==1],
                        results$Time[results$IsPelagic==1],sum,na.rm=TRUE)
-  
+
   ind$Mtlbio <- tapply(results$Biomass*results$TrophicLevel,
                        results$Time,sum,na.rm=TRUE)/ind$Totbio
 
   ind$Mtlcat <- tapply(results$Catch*results$TrophicLevel,
                        results$Time,sum,na.rm=TRUE)/ind$Totcat
-  
+
   ind$Bio_pp <- ind$Totbio/tapply(results$Biomass[results$IsPrimaryProducer==1],
                        results$Time[results$IsPrimaryProducer==1],sum,na.rm=TRUE)
-  
+
   ind$Dembio_pp <- tapply(results$Biomass[results$IsDemersal==1],
                        results$Time[results$IsDemersal==1],sum,na.rm=TRUE)/
                 tapply(results$Biomass[results$IsPrimaryProducer==1],
                        results$Time[results$IsPrimaryProducer==1],sum,na.rm=TRUE)
-  
+
   ind$Pelbio_pp <- tapply(results$Biomass[results$IsPelagic==1],
                           results$Time[results$IsPelagic==1],sum,na.rm=TRUE)/
     tapply(results$Biomass[results$IsPrimaryProducer==1],
            results$Time[results$IsPrimaryProducer==1],sum,na.rm=TRUE)
-  
+
   ind$Cat_pp <- ind$Totcat/tapply(results$Biomass[results$IsPrimaryProducer==1],
                                results$Time[results$IsPrimaryProducer==1],sum,na.rm=TRUE)
-  
+
   ind$Demcat_pp <- ind$Demcat/tapply(results$Biomass[results$IsPrimaryProducer==1],
                                   results$Time[results$IsPrimaryProducer==1],sum,na.rm=TRUE)
-  
+
   ind$Pelcat_pp <- ind$Pelcat/tapply(results$Biomass[results$IsPrimaryProducer==1],
                                   results$Time[results$IsPrimaryProducer==1],sum,na.rm=TRUE)
-  
+
   ind$Fishcat <- tapply(results$Catch[results$IsFish==1],results$Time[results$IsFish==1],
                         sum,na.rm=TRUE)
-  
+
   ind$Fish_exprate <- ind$Fishcat / ind$Fishbio
 
   if(max(ind$Fishbio) <= 0)
@@ -182,8 +183,8 @@ if (length(which(results$TrophicLevel>=3.5))>0)
   results$Depletion <- results$Biomass / results$Bzero
   results$IsBelowTarget <- rep(0,nrow(results))
   results$IsOverfished <- rep(0,nrow(results))
-  results$IsBelowTarget[results$Depletion<results$Btarget] <- 1 
-  results$IsOverfished[results$Depletion<(0.5*results$Btarget)] <- 1 
+  results$IsBelowTarget[results$Depletion<results$Btarget] <- 1
+  results$IsOverfished[results$Depletion<(0.5*results$Btarget)] <- 1
 
 if ( sum(lookup$IsAssessedByFisheriesAssessment) > 0)
 {
@@ -193,15 +194,13 @@ if ( sum(lookup$IsAssessedByFisheriesAssessment) > 0)
 }
 
 ind$Prop_belowtarget <-  sum(results$IsBelowTarget)/length( results$IsBelowTarget)
- 
+
   ind$Value <- tapply(results$Catch*results$USDollarsPerTon, results$Time,
                       sum, na.rm=TRUE)
-  
- 
+
+
 ind$Prop_abovetarget <- (1- ind$Prop_belowtarget)
 
-  return(ind)  
+  return(ind)
+
 }
-
-
-
