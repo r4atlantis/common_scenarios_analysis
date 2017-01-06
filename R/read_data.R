@@ -39,13 +39,13 @@ read_data <- function(scenarios, regions, dir = getwd()) {
 # LOOP THROUGH EACH MODEL
 for (scenario_it in scenarios) {
 for (region_it in regions) {
-  lookup <- read_lookup(file.path(dir, paste0(region_it, "BasicInfo.csv")))
+  lookup <- read_lookup(file.path(dir, paste0(region_it, "_BasicInfo.csv")))
   # Read in the files
   bio <- .reshape(read.table(
-    file.path(dir, paste0(region_it, scenario_it, "_BiomIndx.txt")),
+    file.path(dir, paste(region_it, scenario_it, "BiomIndx.txt", sep = "_")),
     header = TRUE))
   catch <- .reshape(read.table(
-    file.path(dir, paste0(region_it, scenario_it, "_Catch.txt")),
+    file.path(dir, paste(region_it, scenario_it, "Catch.txt", sep = "_")),
     header = TRUE))
   # Need to combine the data across regions
   data <- merge(bio, catch, by = c("Time", "Code"), all = TRUE,
