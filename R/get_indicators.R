@@ -51,9 +51,12 @@ get_indicators <- function(bio,cat,lookup)
   #start building indicator data frame
   ind <- data.frame(Time=sort(unique(results$Time)))
    #--------------
-   #Initialize indicators as NA, especially useful in cases where indicators cant be calcualted because some charatacteristic applies to NO species in the model. 
-   # For instance No species is assessed, so indicators with IsAssessed in denominator will not be possible to calculate: 
-   
+   #Initialize indicators as NA,
+   # useful in cases where indicators cannot be calculated because some
+   # characteristic does not apply to any species in the model.
+   # For instance No species is assessed, so indicators with
+   # IsAssessed in denominator
+
     ind$Totbio <- NA
     ind$Totcat <- NA
     ind$Exprate <- NA
