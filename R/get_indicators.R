@@ -58,6 +58,7 @@ get_indicators <- function(bio,cat,lookup)
     ind$Totcat <- NA
     ind$Exprate <- NA
     ind$Fishbio <- NA
+    ind$Jellybio <- NA
     ind$Dempelfish <- NA
     ind$Dempel <- NA
     ind$Bird <- NA
@@ -98,6 +99,8 @@ get_indicators <- function(bio,cat,lookup)
 
   
   ind$Fishbio <- tapply(results$Biomass[results$IsFish==1],results$Time[results$IsFish==1],sum,na.rm=TRUE)
+  ind$Jellybio <- with(results[results$IsJellyfish == 1, ],
+    tapply(Biomass, Time, sum, na.rm = TRUE))
   ind$Dempelfish <- tapply(results$Biomass[results$IsFish==1 & results$IsDemersal==1],
                            results$Time[results$IsFish==1 & results$IsDemersal==1],
                            sum,na.rm=TRUE)/
