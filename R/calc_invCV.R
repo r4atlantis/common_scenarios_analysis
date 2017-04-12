@@ -10,18 +10,6 @@
 #'
 calc_invCV <- function(data, n_years = 10, fillNA = TRUE) {
 
-  .rapply <- function(vec, width, FUN) {
-    sapply(seq_along(vec),
-      function(i) {
-        if (i < width) {
-          NA
-        } else {
-          FUN(vec[i:(i-width+1)])
-        }
-      }
-    )
-  }
-
   # Ensure that there are enough time steps give n_years
   if (length(data) < n_years) {
     stop("The time series is not of length ", n_years,
