@@ -30,7 +30,7 @@ get_years <- function(data, start, end) {
 
   # 04. Extract only year data
   data <- data[row.start:row.end, ]
-  keep <- data$Time / 365
+  keep <- data[, get] / 365
   keep <- which(floor(keep) == keep)
 
   return(data[keep, ])
