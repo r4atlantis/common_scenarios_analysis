@@ -8,6 +8,7 @@
 #' analyses, where either spearman (the default) or pearson correlation
 #' are allowed methods. Spearman analysis does not assume normality in the
 #' data and allows for more data sets to be considered.
+#' @param ... Pass arguments to \code{\link{calc_ccf}}.
 #'
 #' @author Kelli Faye Johnson
 #'
@@ -29,12 +30,16 @@ run_analysis <- function(data,
     cor.test(data.std[, 1], data.std[, 2], method = method))
 
   #' 2. Run cross-correlation
+  res.ccf <- calc_ccf(data, ...)
+  res.ccfstd <- calc_ccf(data.std, ...)
 
   #' 3. Run MARSS
 
   res.list <- list("data" = data, "data.std" = data.std,
     "correlation" = res.cor,
-    "correlation_std" = res.corstd)
+    "correlation_std" = res.corstd,
+    "ccf" = res.ccf,
+    "ccf_std" = res.ccfstd)
 
   return(res.list)
 }
