@@ -25,5 +25,9 @@ read_scenarios <- function(dir, region,
     stop("No scenarios were found.")
   }
 
+  if (!grepl("Dyn", region)) {
+    scens <- scens[!grepl("Dyn", scens)]
+  }
+
   return(scens)
 }

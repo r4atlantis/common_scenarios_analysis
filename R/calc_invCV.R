@@ -16,6 +16,11 @@ calc_invCV <- function(data, n_years = 10, fillNA = TRUE) {
       "\n check your input data to calc_invCV.")
   }
 
+  .rapply <- function(vec, width, FUN) {
+    sapply(seq_along(vec),
+      function(i) if (i < width) NA else FUN(vec[i:(i-width+1)]))
+  }
+
   # Checked the rolling mean with zoo::rollmean and it worked
   means <- .rapply(data, width = n_years, FUN = mean)
   sds <- .rapply(data, width = n_years, FUN = sd)
