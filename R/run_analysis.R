@@ -8,18 +8,21 @@
 #' analyses, where either spearman (the default) or pearson correlation
 #' are allowed methods. Spearman analysis does not assume normality in the
 #' data and allows for more data sets to be considered.
+#' @param Qem Specifications for process error in the estimation method.
+#' @param Rem Specifications for observation error in the estimation method.
 #' @param ... Pass arguments to \code{\link{calc_ccf}}.
 #'
 #' @author Kelli Faye Johnson
 #'
 run_analysis <- function(data,
-  method = c("spearman", "pearson")) {
+  method = c("spearman", "pearson"),
+  Qem = "unconstrained", Rem = "zero", ...) {
 
   method <- match.arg(method)
 
   #' A. Standardize the data
   data.std <- data.frame(
-    calc_stdnormal(data[, 1])
+    calc_stdnormal(data[, 1]),
     calc_stdnormal(data[, 2]))
   colnames(data.std) <- colnames(data)
 
@@ -34,12 +37,14 @@ run_analysis <- function(data,
   res.ccfstd <- calc_ccf(data.std, ...)
 
   #' 3. Run MARSS
+  res.marss <- calc_MARSS(data, Q = Qem, R = Rem)
 
-  res.list <- list("data" = data, "data.std" = data.std,
+  res.list <- list("data" = data, "data_std" = data.std,
     "correlation" = res.cor,
     "correlation_std" = res.corstd,
     "ccf" = res.ccf,
-    "ccf_std" = res.ccfstd)
+    "ccf_std" = res.ccfstd,
+    "marss" = res.marss)
 
   return(res.list)
 }

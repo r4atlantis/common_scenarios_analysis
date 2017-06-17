@@ -6,6 +6,11 @@
 #' where the first column is the attribute and the second column is the
 #' indicator, or the dependent variable. The columns need not be named.
 #'
+#' @return A list of information regarding the pre-whitening models and
+#' the final estimates from the cross correlation function.
+#' @author Kelli Faye Johnson
+#' @export
+#'
 calc_ccf <- function(data, maximumlag = 2) {
 
   x <- data[, 1]
