@@ -11,8 +11,7 @@
 calc_q90 <- function(biomass, virgin = NULL, threshold = 0.2,
   tile = 0.1, n_bins = 100, type = c("log", "linear")) {
 
-  type <- match.arg(arg = type, choices = c("log", "linear"),
-    several.ok = FALSE)
+  type <- match.arg(arg = type, several.ok = FALSE)
 
   # Remove NA
   biomass[is.na(biomass)] <- 0
