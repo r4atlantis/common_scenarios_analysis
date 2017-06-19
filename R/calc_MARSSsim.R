@@ -59,7 +59,8 @@ calc_MARSSsim <- function(Bom = c(0.01, 0.0, 0.01), Rom = 0,
   }
 
   # Simulate
-  sim <- suppressWarnings(MARSS::MARSSsimulate(MLEobj, tSteps = tslength, nsim = 5))
+  sim <- suppressWarnings(MARSS::MARSSsimulate(MLEobj, tSteps = tslength,
+    nsim = iterations))
   sim$sims <- aperm(sim$sim.data, c(2, 1, 3))
 
   # dev.new(); matplot(t(sim$sim.data[, , 1]), main = 0.4)

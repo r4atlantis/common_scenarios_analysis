@@ -26,12 +26,17 @@
 #'
 calc_MARSS <- function(data, iterations = 100,
   B = matrix(list("a:a", "i:a", 0, "i:i"), 2, 2),
-  Q = c("unconstrained", "diagonal and equal", "diagonal and unequal"),
-  R = c("zero", "unconstrained", "diagonal and equal", "diagonal and unequal")
-  ) {
+  Q = "unconstrained", R = "zero") {
 
-  Q <- match.arg(Q, several.ok = FALSE)
-  R <- match.arg(R, several.ok = FALSE)
+  choices <- c(
+    "unconstrained",
+    "diagonal and equal",
+    "diagonal and unequal",
+    "identity",
+    "zero")
+
+  Q <- match.arg(Q, choices = choices, several.ok = FALSE)
+  R <- match.arg(R, choices = choices, several.ok = FALSE)
 
   # Control variables for the MARSS model
   cntl <- list(allow.degen = FALSE, maxit = iterations, safe = TRUE)
