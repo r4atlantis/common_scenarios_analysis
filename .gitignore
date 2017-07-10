@@ -3,4 +3,5 @@
 
 *.zip
 common_scenarios_data/**
+ms/**
 references/**
