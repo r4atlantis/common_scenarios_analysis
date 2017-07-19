@@ -1,6 +1,7 @@
 # A list of files to ignore in the version control system
 # Use a forward slash for all directory locations
 
+*.RData
 *.zip
 common_scenarios_data/**
 ms/**
