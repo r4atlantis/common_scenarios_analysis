@@ -26,7 +26,7 @@ calc_MARSSsim <- function(Bom = c(0.01, 0.0, 0.01), Rom = 0,
   if (Rom == 0) R <- "zero"
   if (Rom != 0) R <- "diagonal and equal"
 
-  # Extract the data from the MARSS package for two harbor seal populations
+  # Data
   data <- data.frame("a" = rnorm(tslength), "i" = rnorm(tslength))
   colnames(data) <- c("a", "i")
   # Specify the model
