@@ -55,7 +55,6 @@ calc_MARSS <- function(data, iterations = 100,
     # B = matrix(list("B:1,1","B:2,1",0,"B:2,2"),2,2),
     Q = Q, # Proc error ~MVN(0,Q)
     Z = "identity",
-    A = "zero", # Data are already standardized
     R = R # Obs error ~MVN(0,R),
     )
 
