@@ -49,7 +49,7 @@ run_analysis <- function(data,
     "ccf:ar1"),
     "est" = c(res.corstd$estimate, res.ccfstd$ccf$acf,
     ifelse("ar1" %in% names(res.ccfstd$xmodel$coef),
-      res.ccfstd$xmodel$coef["ar1"], "yes")))
+      res.ccfstd$xmodel$coef["ar1"], 0)))
 
   B <- cbind(
     t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "B"))[,
@@ -80,13 +80,17 @@ run_analysis <- function(data,
   # Remove the ID
   B <- B[, -which(colnames(B) == "id")]
 
+  pars <- merge(est, B, all = TRUE)
+  pars <- data.frame(pars, "n" = NROW(data))
+
   res.list <- list("data" = data, "data_std" = data.std,
     "correlation" = res.cor,
     "correlation_std" = res.corstd,
     "ccf" = res.ccf,
     "ccf_std" = res.ccfstd,
     "marss" = res.marss,
-    "pars" = merge(est, B, all = TRUE))
+    "pars" = pars,
+    "n" = NROW(data))
 
   return(res.list)
 }
