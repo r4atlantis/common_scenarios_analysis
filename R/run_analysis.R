@@ -60,9 +60,9 @@ run_analysis <- function(data,
       c(1, 2, 4), drop = FALSE],
     tempgrid)
   colnames(B) <- c(
-    "par_Ba:a", "par_Bi:a", "par_Bi:i",
-    "par_Qa:a", "par_Qi:a", "par_Qi:i",
-    "par_Ra:a", "par_Ri:a", "par_Ri:i",
+    "par_b[\'1,1\']", "par_b[\'2,1\']", "par_b[\'2,2\']",
+    "par_q[\'1,1\']", "par_q[\'2,1\']", "par_q[\'2,2\']",
+    "par_r[\'1,1\']", "par_r[\'2,1\']", "par_r[\'2,2\']",
     "EM_process", "EM_observation")
   B <- reshape(B, direction = "long",
     varying = list(1:(NCOL(B) - 2)),
