@@ -14,7 +14,7 @@ run_simulation <- function(specs, file = NULL) {
   }
 
   Bom <- as.numeric(c(B1, B2, B1))
-  Qom <- as.numeric(Qom)
+  Qom <- as.numeric(c(Q1, Q2, Q1))
   Rom <- as.numeric(Rom)
   if (grepl("\\(|:", tslength)) {
     tslength <- eval(parse(text = tslength))
@@ -41,7 +41,8 @@ run_simulation <- function(specs, file = NULL) {
   results <- do.call("rbind", results)
   results$autocorrelation <- B1
   results$correlation <- B2
-  results$process <- Qom
+  results$processdiag <- Q1
+  results$process <- Q2
   results$observation <- Rom
 
   if (!is.null(file)) {

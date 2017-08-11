@@ -14,21 +14,21 @@
 #' include in each simulated data set.
 #'
 calc_MARSSsim <- function(Bom = c(0.01, 0.0, 0.01), Rom = 0,
-  Qom = 0, iterations = 100, tslength = 20) {
+  Qom = c(1, 0, 1), iterations = 100, tslength = 20) {
+
+  if (length(Bom) != 3) stop("Bom must be of length 3")
+  if (length(Qom) != 3) stop("Qom must be of length 3")
 
   choices <- c("diagonal and equal", "diagonal and unequal",
     "equalvarcov", "identity", "unconstrained", "zero")
   #' Equal var cov sets the off diagonals to be equal and the diagonals
   #' to be equal, but the off diagonals are not equal to the diagonals.
-  if (Qom == 0) Q <- "identity"
-  if (Qom != 0) Q <- "unconstrained"
 
   if (Rom == 0) R <- "zero"
   if (Rom != 0) R <- "diagonal and equal"
 
   # Data
   data <- data.frame("a" = rnorm(tslength), "i" = rnorm(tslength))
-  colnames(data) <- c("a", "i")
   # Specify the model
   # "identity", "unconstrained", "diagonal and unequal",
   # "diagonal and equal", "equalvarcov", "zero"
@@ -39,7 +39,7 @@ calc_MARSSsim <- function(Bom = c(0.01, 0.0, 0.01), Rom = 0,
     U = "zero", # b/c the data are z-scored U should ~ == 0
     B = matrix(list("a:a", "i:a", 0, "i:i"), 2, 2),
     # B = matrix(list("B:1,1","B:2,1",0,"B:2,2"),2,2),
-    Q = Q, # Proc error ~MVN(0,Q)
+    Q = "unconstrained", # Proc error ~MVN(0,Q)
     Z = "identity",
     A = "zero", # Data are already standardized
     R = R # Obs error ~MVN(0,R),
@@ -53,7 +53,7 @@ calc_MARSSsim <- function(Bom = c(0.01, 0.0, 0.01), Rom = 0,
   # Fixing parameters
   # c("marss", "method", "par")
   MLEobj$par$B[1:length(MLEobj$par$B)] <- Bom
-  if (Q != "identity") MLEobj$par$Q[1:length(MLEobj$par$Q)] <- c(1, Qom, 1)
+  MLEobj$par$Q[1:length(MLEobj$par$Q)] <- Qom
   if (Rom != 0) {
     MLEobj$par$R[1:length(MLEobj$par$R)] <- Rom
   }
