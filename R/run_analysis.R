@@ -15,7 +15,7 @@
 #' @author Kelli Faye Johnson
 #'
 run_analysis <- function(data,
-  method = c("spearman", "pearson"),
+  method = c("pearson", "spearman"),
   Qem = "unconstrained", Rem = "zero", ...) {
 
   method <- match.arg(method)
