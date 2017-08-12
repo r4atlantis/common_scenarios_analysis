@@ -27,10 +27,10 @@ run_analysis <- function(data,
   colnames(data.std) <- colnames(data)
 
   #' 1. Run correlation
-  res.cor <- suppressWarnings(
-    cor.test(data[, 1], data[, 2], method = method))
-  res.corstd <- suppressWarnings(
-    cor.test(data.std[, 1], data.std[, 2], method = method))
+  res.cor <- cor(data[, 1], data[, 2],
+    method = method, use = "na.or.complete")
+  res.corstd <- cor(data.std[, 1], data.std[, 2],
+    method = method, use = "na.or.complete")
 
   #' 2. Run cross-correlation
   res.ccf <- calc_ccf(data, ...)
