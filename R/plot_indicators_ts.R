@@ -1,57 +1,73 @@
 #'
-#' @param data
-#' @param lims A numeric vector of length 2, supplying the limiations
-#' of the y axis.
-#' @param ylab
+#' @param data A data.frame on the normal scale
+#' @param scenario
+#' @param region
+#' @param file A character value providing the full name for the file to be
+#' saved. If you want the plot printed to the screen leave as the default,
+#' which is \code{NULL}.
+#' @param attribute Character values supplying the appropriate column name,
+#' or a numeric value specifying the column number, but the labels on the
+#' plot look better if it is the former rather than the later.
+#' @param indicator Character values supplying the appropriate column name,
+#' or a numeric value specifying the column number, but the labels on the
+#' plot look better if it is the former rather than the later.
 #'
-plot_indicators_ts <- function(data,
-  lims = c(-1.0, 1.0), ylab, lags = -1:0) {
+plot_indicators_ts <- function(data, scenario, region, file = NULL,
+  attribute, indicator) {
 
-  # Make the critical intervals very thin and gray
-  # Remove all the points and just have lines with different types.
+  my.size <- 0.75
+  if (!is.null(file)) on.exit(dev.off())
+  if (is.matrix(data)) data <- as.data.frame(data)
 
-  # specs
-  lsize <- 0.75
-  pchsize <- 2
+  scenarioname <- gsub("cur_", " ", scenario)
+  scenarioname <- gsub("mpa", "MPA", scenarioname)
+  scenarioname <- gsub("OA_01", "OA_extreme", scenarioname)
+  scenarioname <- gsub("OA_005", "OA_mild", scenarioname)
+  scenarioname <- gsub("_", " ", scenarioname)
+  indicatorname <- gsub("fish|tot|sur", "", indicator)
+  indicatorname <- gsub("^m", "", indicatorname)
 
-  keep <- table(data$time)[which(table(data$time) > 2)]
-  data <- data[data$time %in% names(keep), ]
-  data$n_years <- 50 - (data$time / 365)
-  data$shorttype <- gsub("[[:punct:]][[:space:]][-[0-9]+", "", data$type)
-  levels <- unique(data$type)
-  data$type <- factor(data$type, levels = c("data", "MARSS", "correlation", levels[rev(order(-1*as.numeric(gsub("[[:alpha:]]+|[[:space:]]|[[:punct:]]", "", levels))))][-(1:3)]))
-  data$lag <- factor(data$lag, levels = rev(unique(data$lag)[order(unique(data$lag))]))
+  if (!"Time" %in% colnames(data)) data$Time <- 1:NROW(data) * 365
+  data_original <- data
+  data[, attribute] <- calc_stdnormal(data[, attribute])
+  data[, indicator] <- calc_stdnormal(data[, indicator])
 
-  g <- ggplot(data[data$lag %in% c(lags, NA), ],
-    aes(x = time, y = estimate, group = group)) +
-    facet_grid(type ~ . , scales = "free") +
-    geom_line(aes(lty = lag), lwd = lsize) +
-    geom_ribbon(data = data[data$type %in% "MARSS", ],
-      aes(ymin = lowerCI, ymax = upperCI), alpha = 0.12) +
-    geom_ribbon(data = data[grep("ccf|corr", data$type), ],
-      aes(ymin = -1, ymax = lowerCI), alpha = 0.12) +
-    geom_ribbon(data = data[grep("ccf|corr", data$type), ],
-      aes(ymin = upperCI, ymax = 1), alpha = 0.12) +
-  # coord_cartesian(ylim = lims) +
-  scale_x_continuous(breaks = data$time, labels = data$n_years, expand = c(0, 0)) +
-  guides(
-    linetype = guide_legend(override.aes = list(size = 0.5), keywidth = 2),
-    colour = guide_legend(keywidth = 2)) +
-  geom_hline(yintercept = 0, col = "red", linetype = 2, lwd = lsize / 2) +
-
-  xlab("Number of years of data") +
-  ylab(paste("Correlation of ", as.character(ylab))) +
-
-  theme(
-    plot.background = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank(),
-    panel.background = element_blank(),
-    panel.border = element_rect(colour = "black", fill = NA, size = 1))
-
-  return(g)
+  if (!is.null(file)) {
+    png(filename = normalizePath(paste0(file, ".png"), mustWork = FALSE),
+        res = 100)
+  }
+  par(mfrow = c(3, 1), mar = c(0, 4, 0.5, 4), oma = c(4, 1, 2, 1),
+    cex = my.size)
+  plot(x = data_original$Time, y = data_original[, attribute],
+    ylim = range(data_original[, c(attribute, indicator)]),
+    type = "l", lty = 1, xaxt = "n",
+    xlab = "", ylab = "absolute")
+  mtext(side = 3, line = 0.2, cex = my.size * 1.1,
+    text = paste0(scenarioname, " in ", region))
+  lines(x = data_original$Time, y = data_original[, indicator],
+    lty = 2)
+  legend("bottomright", legend = c("attribute", "indicator"),
+    lty = c(1, 2),
+    bty = "n", horiz = TRUE)
+  plot(x = data$Time, y = data[, attribute],
+    ylim = c(min(data[, c(attribute, indicator)]),
+             max(data[, c(attribute, indicator)])),
+    type = "l", lty = 1, xaxt = "n",
+    xlab = "year", ylab = "standardized")
+  lines(x = data$Time, y = data[, indicator],
+    lty = 2)
+  plot(x = data_original$Time, y = data_original[, attribute],
+    type = "l", lty = 1, xaxt = "n",
+    xlab = "", ylab = "attribute")
+  par(new = TRUE)
+  plot(x = data_original$Time, y = data_original[, indicator],
+    type = "l", lty = 2, xaxt = "n", yaxt = "n",
+    xlab = "", ylab = "")
+  axis(side = 1, labels = data$Time / 365,
+    at = data$Time)
+  axis(side = 4)
+  mtext(side = 4, line = 2.5, text = indicatorname,
+    font.lab = 2, cex = my.size)
+  mtext(side = 1, outer = TRUE, cex = my.size, line = 2.2,
+    text = "post burn-in to terminal year")
 }
-
-# plot_indicators_ts(tsinfo,
-#   ylab = paste0(indicators.table[ind_it, "label"], " in ", reg_it, ":", sce_it), lags = -2:0)
