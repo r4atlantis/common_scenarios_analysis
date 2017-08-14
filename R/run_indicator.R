@@ -40,49 +40,35 @@ run_indicator <- function(data, attribute, indicator,
   if (diff(range(data[, indicator], na.rm = TRUE)) <
     .Machine$double.eps ^ 0.5) return(NULL)
 
-  data[, attribute] <- calc_stdnormal(data[, attribute])
-  data[, indicator] <- calc_stdnormal(data[, indicator])
-
   if (!is.null(file)) {
     plot_indicators_ts(data = data, scenario = scenario,
       region = region, file = file,
       attribute = attribute, indicator = indicator)
   }
 
-  marss_ts <- run_MARSS(data = data, attribute = attribute, indicator = indicator)
-  cor_ts <- run_cor(data = data_original, attribute = attribute, indicator = indicator)
-  cross_ts <- run_crosscor(data = data, attribute = attribute, indicator = indicator)
+  analysis <- run_analysis(data = data)
+  # marss_ts <- run_MARSS(data = data, attribute = attribute, indicator = indicator)
+  # cor_ts <- run_cor(data = data_original, attribute = attribute, indicator = indicator)
+  # cross_ts <- run_crosscor(data = data, attribute = attribute, indicator = indicator)
 
-  tsinfo <- merge(merge(
-    marss_ts$tsinfo,
-    cor_ts, all = TRUE),
-    cross_ts$tsinfo, all = TRUE)
+  analysis$pars$region <- region
+  analysis$pars$scenario <- scenario
+  analysis$pars$scenariogroup <- scenariogroup
+  analysis$pars$scenarioend <- scenarioend
+  analysis$pars$estimate_a <- tail(data_original[, attribute], 1)
+  analysis$pars$estimate_i <- tail(data_original[, indicator], 1)
 
-  tsinfo$region <- region
-  tsinfo$scenario <- scenario
-  tsinfo$scenariogroup <- scenariogroup
-  tsinfo$scenarioend <- scenarioend
-  tsinfo$estimate_a <- tail(data_original[, attribute], 1)
-  tsinfo$estimate_i <- tail(data_original[, indicator], 1)
-
-  returnme <- list(
-    "marss" = marss_ts,
-    "cor_ts" = cor_ts,
-    "crosscor" = cross_ts,
-    "tsinfo" = tsinfo,
-    "filename" = file
-    )
+  analysis$filename <- file
 
   # Save the data
   if(!is.null(file)) {
     file <- normalizePath(file, mustWork = FALSE)
     file <- paste0(file, ".RData")
     filename <- file
-    save(cor_ts, cross_ts, file, data, region,
-      scenario, scenariogroup, scenarioend,
-      marss_ts, tsinfo, filename,
+    save(analysis, file, filename, data,
+      region, scenario, scenariogroup, scenarioend,
       file = file)
   }
 
-  return(returnme)
+  return(analysis)
 }

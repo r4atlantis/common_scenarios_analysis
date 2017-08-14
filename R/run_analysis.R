@@ -42,46 +42,31 @@ run_analysis <- function(data,
     function(x) calc_MARSS(data, Q = x[1], R = x[2]))
 
   #' 4. Get results
-  est <- data.frame(
-    "EM_process" = "",
-    "EM_observation" = "",
-    "par" = c("correlation", paste0("ccf:", res.ccfstd$ccf$lag),
-    "ccf:ar1"),
-    "est" = c(res.corstd$estimate, res.ccfstd$ccf$acf,
-    ifelse("ar1" %in% names(res.ccfstd$xmodel$coef),
-      res.ccfstd$xmodel$coef["ar1"], 0)))
-
-  B <- cbind(
-    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "B"))[,
-      c(1, 2, 4), drop = FALSE],
-    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "Q"))[,
-      c(1, 2, 4), drop = FALSE],
-    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "R"))[,
-      c(1, 2, 4), drop = FALSE],
-    tempgrid)
-  colnames(B) <- c(
-    "par_b[\'1,1\']", "par_b[\'2,1\']", "par_b[\'2,2\']",
-    "par_q[\'1,1\']", "par_q[\'2,1\']", "par_q[\'2,2\']",
-    "par_r[\'1,1\']", "par_r[\'2,1\']", "par_r[\'2,2\']",
-    "EM_process", "EM_observation")
-  B <- reshape(B, direction = "long",
-    varying = list(1:(NCOL(B) - 2)),
-    v.names = "est", timevar = "par",
-    times = gsub("par_", "", colnames(B))[1:(NCOL(B) - 2)])
-  rownames(B) <- NULL
-  # Remove the zero constrained process errors
-  B <- B[!(B$EM_observation == "zero" &
-    grepl(x = B$par, pattern = "R[a-z]:[a-z]")), ]
-  # Remove the off-diagonals of the identity matrices
-  B <- B[!(grepl(pattern = "diagonal", x = B$EM_observation) &
-    grepl(x = B$par, pattern = "Ri:a")), ]
-  B <- B[!(grepl(pattern = "diagonal", x = B$EM_process) &
-    grepl(x = B$par, pattern = "Qi:a")), ]
-  # Remove the ID
-  B <- B[, -which(colnames(B) == "id")]
-
-  pars <- merge(est, B, all = TRUE)
-  pars <- data.frame(pars, "n" = NROW(data))
+  pars <- cbind(tempgrid,
+    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "B")[
+      c(1, 2, 4), , drop = FALSE]),
+    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "Q")[
+      c(1, 2, 4), , drop = FALSE]),
+    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "R")[
+      c(1, 2, 4), , drop = FALSE]),
+     rep(res.corstd, NROW(tempgrid)),
+     matrix(rep(res.ccfstd$ccf$acf, each = NROW(tempgrid)),
+       nrow = NROW(tempgrid)),
+     rep(NA, NROW(tempgrid)))
+  colnames(pars) <- c(
+    "EM_process", "EM_observation",
+    paste(rep(c("b", "q", "r"), each = 3),
+      c("[\'1,1\']", "[\'2,1\']", "[\'2,2\']"), sep = "_"),
+    "rho",
+    paste0("ccf:", res.ccfstd$ccf$lag),
+    "AR"
+    )
+  if ("ar1" %in% names(res.ccfstd$xmodel$coef)) {
+    pars$AR <- res.ccfstd$xmodel$coef["ar1"]
+  }
+  rownames(pars) <- NULL
+  pars$n <- NROW(data)
+  pars$converged <- sapply(res.marss, "[[", "convergence")
 
   res.list <- list("data" = data, "data_std" = data.std,
     "correlation" = res.cor,
@@ -94,3 +79,4 @@ run_analysis <- function(data,
 
   return(res.list)
 }
+
