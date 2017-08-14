@@ -59,6 +59,7 @@ calc_MARSSsim <- function(Bom = c(0.01, 0.0, 0.01), Rom = 0,
   }
 
   # Simulate
+  set.seed(iterations)
   sim <- suppressWarnings(MARSS::MARSSsimulate(MLEobj, tSteps = tslength,
     nsim = iterations))
   sim$sims <- aperm(sim$sim.data, c(2, 1, 3))
