@@ -47,7 +47,11 @@ run_simulation <- function(specs, file = NULL) {
 
   if (!is.null(file)) {
     if (file == "specs") {
-      file <- paste(c(specs[c(1:5, 7)], ".RData"), collapse = "_")
+      file <- paste(c(B1, B2, Q1, Q2, Rom,
+        paste(eval(parse(text = Qem)), collapse = "-"),
+        paste(eval(parse(text = Rem)), collapse = "-"),
+        ".RData"), collapse = "_")
+      file <- gsub(" ", "", file)
     }
     save(specs, simulateddata, analysis, results, file = file)
   }
