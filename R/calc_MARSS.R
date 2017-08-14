@@ -60,23 +60,14 @@ calc_MARSS <- function(data, iterations = 100,
 
   data_model <- t(data[, 1:2])
 
-  #' Create a temporary file
-  tempfile1 <- tempfile(pattern = "file", tmpdir = tempdir(),
-    fileext = ".txt")
-  sink(tempfile1)
-
   ci <- try(
     MARSS::MARSS(data_model, model = model, control = cntl,
     silent = TRUE, fit = TRUE, method = "kem"),
     silent = TRUE)
   if (class(ci) != "try-error") {
-    ci <- try(MARSS::MARSSparamCIs(ci), silent = TRUE)
+    ci <- suppressWarnings(try(MARSS::MARSSparamCIs(ci), silent = TRUE))
+    if (any(unlist(lapply(ci$par.se, is.na)))) ci$convergence <- 11
   }
-
-  sink()
-  unlink(tempfile1)
 
   return("marss" = ci)
 }
-
-
