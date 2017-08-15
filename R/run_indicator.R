@@ -39,6 +39,9 @@ run_indicator <- function(data, attribute, indicator,
     .Machine$double.eps ^ 0.5) return(NULL)
   if (diff(range(data[, indicator], na.rm = TRUE)) <
     .Machine$double.eps ^ 0.5) return(NULL)
+  # Check that the attribute and indicator are not exactly equal
+  if (all(data[, attribute] == data[, indicator])) return(NULL)
+
 
   if (!is.null(file)) {
     plot_indicators_ts(data = data, scenario = scenario,
@@ -46,7 +49,7 @@ run_indicator <- function(data, attribute, indicator,
       attribute = attribute, indicator = indicator)
   }
 
-  analysis <- run_analysis(data = data)
+  analysis <- run_analysis(data = data[, c(attribute, indicator)])
   # marss_ts <- run_MARSS(data = data, attribute = attribute, indicator = indicator)
   # cor_ts <- run_cor(data = data_original, attribute = attribute, indicator = indicator)
   # cross_ts <- run_crosscor(data = data, attribute = attribute, indicator = indicator)
@@ -57,6 +60,8 @@ run_indicator <- function(data, attribute, indicator,
   analysis$pars$scenarioend <- scenarioend
   analysis$pars$estimate_a <- tail(data_original[, attribute], 1)
   analysis$pars$estimate_i <- tail(data_original[, indicator], 1)
+  analysis$pars$attribute <- attribute
+  analysis$pars$indicator <- indicator
 
   analysis$filename <- file
 
