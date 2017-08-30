@@ -58,16 +58,17 @@ calc_MARSS <- function(data, iterations = 100,
     R = R # Obs error ~MVN(0,R),
     )
 
+  e <- simpleError("MARSS sucks")
   data_model <- t(data[, 1:2])
-
-  ci <- try(
+  if(all.equal(data[, 1], data[, 2], tolerance = 1e-9) == TRUE) browser()
+  ci <- tryCatch(
     MARSS::MARSS(data_model, model = model, control = cntl,
     silent = TRUE, fit = TRUE, method = "kem"),
-    silent = TRUE)
-  if (class(ci) != "try-error") {
+    error = function(e) e)
+  if (!"error" %in% class(ci)) {
     ci <- suppressWarnings(try(MARSS::MARSSparamCIs(ci), silent = TRUE))
     if (any(unlist(lapply(ci$par.se, is.na)))) ci$convergence <- 11
-  }
+  } else browser()
 
   return("marss" = ci)
 }
