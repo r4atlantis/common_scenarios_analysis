@@ -17,6 +17,10 @@ calc_ccf <- function(data, maximumlag = 2) {
   y <- data[, 2]
   res.list <- list("xmodel" = NULL, "ymodel" = NULL, "ccf" = NULL)
 
+  if (!"forecast" %in% installed.packages()[, 1]) {
+    install.packages("forecast", repos = "https://cloud.r-project.org")
+  }
+
   model <- try(forecast::auto.arima(x, seasonal = FALSE),
     silent = TRUE)
   if (class(model)[1] == "try-error") {
