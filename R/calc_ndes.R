@@ -5,8 +5,6 @@
 #' is larger than or equal to zero then the species is non declining.
 #' The original method was proposed by Lynam *et al*. (2010) and was later
 #' used in the *IndiSeas* project by Kleisner *et al*. (2015).
-#' I am assuming that exploited means targeted, but I subset the data prior
-#' to assigning it to \code{data}.
 #'
 #' @param data
 #' @param time A character value supplying the column name containing
@@ -24,15 +22,13 @@ calc_ndes <- function(data, time = "Time", width = 10,
 
   data_all <- data[order(data[, time]), ]
   data_all_times <- unique(data_all[, time])
-  ndes <- NULL
+  ndes <- rep(NA, length(data_all_times))
+  names(ndes) <- data_all_times
 
   # If there are more than 10 unique times, then calculate the
   # metric on a moving time window of ten years
   for (it_time in seq_along(data_all_times)) {
-    if (it_time < width) {
-      ndes[length(ndes) + 1] <- NA
-      next
-    }
+    if (it_time < width) next
 
     data <- data_all[data_all[, time] %in%
       data_all_times[(it_time - width + 1):it_time], ]
@@ -50,7 +46,7 @@ calc_ndes <- function(data, time = "Time", width = 10,
         taus[it_spp, 2] <- cor(use, method = "kendall")[2, 1]
       }
 
-    ndes[length(ndes) + 1] <- sum(taus$tau >= 0) / NROW(taus)
+    ndes[it_time] <- sum(taus$tau >= 0) / NROW(taus)
   }
 
   return(ndes)

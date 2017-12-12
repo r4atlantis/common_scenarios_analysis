@@ -22,10 +22,10 @@ read_data <- function(scenario, region, dir = getwd()) {
   # Read in the files
   bio <- read.table(
     file.path(dir, paste(region, scenario, "BiomIndx.txt", sep = "_")),
-    header = TRUE)
+    header = TRUE, fill = TRUE)
   catch <- read.table(
     file.path(dir, paste(region, scenario, "Catch.txt", sep = "_")),
-    header = TRUE)
+    header = TRUE, fill = TRUE)
 
   returnme <- list("lookup" = lookup, "bio" = bio, "catch" = catch)
   attr(returnme, "region") <- region

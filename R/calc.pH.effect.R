@@ -96,7 +96,7 @@ calc.pH.effect <- function(baseOutBiomIndxFileName, scenarioOutBiomIndxFileName,
   #files <- list.files(base.wd)
   #file.name <- file.path(base.wd, files[which(grepl("csv", files)=="TRUE")])
 
-  combo.dat <- rbind(scenario.effect[-1], guild.dat[,-8])
+  combo.dat <- rbind(scenario.effect[-1], guild.dat)#[,-8])
   colnames(combo.dat) <- names(scenario.effect[-1])
 
   return(list(scenario.effect=scenario.effect[-1], dataframe.effect=combo.dat))

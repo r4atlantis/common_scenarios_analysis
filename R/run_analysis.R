@@ -1,82 +1,99 @@
 #' Run correlation analysis for a given data set.
 #'
 #' @details Calculate correlation along a time series.
-#' @param data A \code{data.frame} with two columns,
-#' where the first column is the attribute and the second column is the
-#' indicator, or the dependent variable. The columns need not be named.
-#' @param method The statistical method to be used for the correlation
-#' analyses, where either spearman (the default) or pearson correlation
-#' are allowed methods. Spearman analysis does not assume normality in the
-#' data and allows for more data sets to be considered.
-#' @param Qem Specifications for process error in the estimation method.
-#' @param Rem Specifications for observation error in the estimation method.
-#' @param ... Pass arguments to \code{\link{calc_ccf}}.
+#' @param data A \code{data.frame} with at least two columns. Columns must
+#' alternate between attributes and indicators, but they
+#' need not be named.
+#' @param lag The maximum lag investigated for the cross correlation functions.
+#' @param Bem Specifications for the interaction matrix in the
+#' estimation method (EM).
+#' @param Qem Specifications for process error in the EM.
+#' @param Rem Specifications for observation error in the EM.
 #'
 #' @author Kelli Faye Johnson
 #'
-run_analysis <- function(data,
-  method = c("pearson", "spearman"),
-  Qem = "unconstrained", Rem = "zero", ...) {
+run_analysis <- function(data, lag = 2,
+  Bem = "fixed", Qem = "unconstrained", Rem = "zero",
+  prewhiten = c("AIC", "AR1", "no")) {
 
-  method <- match.arg(method)
+  #' 1. Deal with multiple columns
+  Zem <- colnames(data) <- rep(c("a", "i"), times = NCOL(data) / 2)
+  data.stacked <- data.frame(
+    "a" = c(data[, which(Zem == unique(Zem)[1])]),
+    "i" = c(data[, which(Zem == unique(Zem)[2])]))
 
-  #' A. Standardize the data
-  data.std <- data.frame(
-    calc_stdnormal(data[, 1]),
-    calc_stdnormal(data[, 2]))
-  colnames(data.std) <- colnames(data)
+  #' 2. Standardize the data
+  data.std <- apply(data, 2, calc_stdnormal)
+  data.std.stacked <- apply(data.stacked, 2, calc_stdnormal)
 
-  #' 1. Run correlation
-  res.cor <- cor(data[, 1], data[, 2],
-    method = method, use = "na.or.complete")
-  res.corstd <- cor(data.std[, 1], data.std[, 2],
-    method = method, use = "na.or.complete")
+  #' 3. Run cross-correlation
+  prewhiten <- match.arg(prewhiten)
+  ccf <- calc_ccf(data.stacked, maximumlag = lag,
+    modeltype = prewhiten)
+  ccf.std <- calc_ccf(data.std.stacked, maximumlag = lag,
+    modeltype = prewhiten)
+  names(ccf$pars) <- paste("raw", names(ccf$pars), sep = ".")
+  names(ccf.std$pars) <- paste("std", names(ccf.std$pars), sep = ".")
+  ccfpars <- c(unlist(ccf$pars), unlist(ccf.std$pars))
+  if (prewhiten != "no") {
+    nonwhiten <- calc_ccf(data.stacked, maximumlag = lag,
+      modeltype = "no")
+    nonwhiten.std <- calc_ccf(data.std.stacked, maximumlag = lag,
+      modeltype = "no")
+    morepars <- c(nonwhiten$pars, nonwhiten.std$pars)
+    names(morepars) <- c(paste("raw.no", names(nonwhiten$pars), sep = "."),
+      paste("std.no", names(nonwhiten.std$pars), sep = "."))
+    ccfpars <- c(ccfpars, morepars)
+  }
 
-  #' 2. Run cross-correlation
-  res.ccf <- calc_ccf(data, ...)
-  res.ccfstd <- calc_ccf(data.std, ...)
-
-  #' 3. Run MARSS
-  tempgrid <- expand.grid(Qem, Rem)
-  res.marss <- apply(tempgrid, 1,
-    function(x) calc_MARSS(data, Q = x[1], R = x[2]))
+  #' 4. Run MARSS
+  res.marss <- list()
+  for (ii_B in Bem) {
+  for (ii_Q in Qem) {
+  for (ii_R in Rem) {
+  for (ii_std in c("raw", "std")) {
+    counter <- length(res.marss) + 1
+    if (ii_std == "raw") use <- data
+    if (ii_std == "std") use <- data.std
+    temp <- calc_MARSS(use,
+      Q = ii_Q, R = ii_R, B = ii_B, Z = Zem,
+      U = ifelse(ii_std == "raw", "unconstrained", "zero"),
+      MARSScntliterations = 500)
+    if (is.null(temp)) next
+    res.marss[[counter]] <- temp
+    get <- paste(
+      substring(c(ii_std, ii_B, ii_Q, ii_R), 1, 3),
+      collapse = ".")
+    parvals <- MARSS:::parmat(temp)[c("B", "Q", "R")]
+    #' warning: only reporting some of the R matrix
+    parvals$R <- parvals$R[1]
+    parvals$Qrho <- parvals$Q[2] / (sqrt(parvals$Q[1]) * sqrt(parvals$Q[4]))
+    res.marss[[counter]]$parvals <- unlist(parvals)
+    names(res.marss)[counter] <- get
+  }}}}
 
   #' 4. Get results
-  pars <- cbind(tempgrid,
-    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "B")[
-      c(1, 2, 4), , drop = FALSE]),
-    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "Q")[
-      c(1, 2, 4), , drop = FALSE]),
-    t(sapply(lapply(res.marss, MARSS:::parmat), "[[", "R")[
-      c(1, 2, 4), , drop = FALSE]),
-     rep(res.corstd, NROW(tempgrid)),
-     matrix(rep(res.ccfstd$ccf$acf, each = NROW(tempgrid)),
-       nrow = NROW(tempgrid)),
-     rep(NA, NROW(tempgrid)))
-  colnames(pars) <- c(
-    "EM_process", "EM_observation",
-    paste(rep(c("b", "q", "r"), each = 3),
-      c("[\'1,1\']", "[\'2,1\']", "[\'2,2\']"), sep = "_"),
-    "rho",
-    paste0("ccf:", res.ccfstd$ccf$lag),
-    "AR"
-    )
-  if ("ar1" %in% names(res.ccfstd$xmodel$coef)) {
-    pars$AR <- res.ccfstd$xmodel$coef["ar1"]
-  }
-  rownames(pars) <- NULL
-  pars$n <- NROW(data)
-  pars$converged <- sapply(res.marss, "[[", "convergence")
+  aa <- sapply(res.marss, "[[", "parvals")
+  bb <- c(t(aa))
+  names(bb) <- c(outer(colnames(aa), rownames(aa), paste, sep = "."))
+  aa <- c(sapply(res.marss, "[[", "convergence"))
+  names(aa) <- paste(names(res.marss), "hess", sep = ".")
 
-  res.list <- list("data" = data, "data_std" = data.std,
-    "correlation" = res.cor,
-    "correlation_std" = res.corstd,
-    "ccf" = res.ccf,
-    "ccf_std" = res.ccfstd,
+  pars <- c(ccfpars, bb, aa)
+  pars <- c(pars, setNames(c(NROW(data), table(Zem)[1]), c("n", "ngroups")))
+
+  res.list <- list(
+    "data" = data,
+    "ccf.raw" = ccf, "ccf.std" = ccf.std,
     "marss" = res.marss,
     "pars" = pars,
-    "n" = NROW(data))
+    "ngroups" = table(Zem),
+    "n" = NROW(data)
+  )
+  if (exists("morepars")) {
+    res.list$ccf.raw.no <- nonwhiten
+    res.list$ccf.std.no <- nonwhiten.std
+  }
 
   return(res.list)
 }
-

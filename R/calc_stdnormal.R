@@ -1,8 +1,7 @@
 #' Normalize a vector to N(0,1)
 #'
 #' @param x A vector of numeric values you wish to standardize
-#' @param na.rm A logical value specifying whether you would like
-#' to remove \code{NA} values.
+#'
 #' @return A vector with a mean of zero and a standard deviation of 1.
 #'
 calc_stdnormal <- function(x, na.rm = TRUE) {
@@ -19,18 +18,6 @@ calc_stdnormal <- function(x, na.rm = TRUE) {
     stop("calc_stdnormal only works on vectors")
   }
 
-  final <- (x - mean(x, na.rm = na.rm)) / sd(x, na.rm = na.rm)
-  return(final)
-}
-
-
-calc_stdnormal_remove <- function(x, n_min = 5, ...) {
-
-  final <- list()
-  while(length(x) >= n_min) {
-    final[[length(final) + 1]] <- calc_stdnormal(x, ...)
-    x <- x[-1]
-  }
-
+  final <- (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
   return(final)
 }

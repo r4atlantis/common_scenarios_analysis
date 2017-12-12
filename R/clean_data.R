@@ -3,12 +3,14 @@
 #' @param biomass
 #' @param catch
 #' @param lookup
+#' @param minTL
 #'
-clean_data <- function(biomass = NULL, catch = NULL, lookup = NULL) {
+clean_data <- function(biomass = NULL, catch = NULL, lookup = NULL,
+  minTL = 1.0) {
 
   # Lookup
   # 01 - Remove duplicated species
-  # 02 - Remove species with TL <= 1
+  # 02 - Remove species with TL <= minTL
   # 03 - Remove bacteria, detritus, and DIN if not already removed.
   if (!is.null(lookup)) {
     # Remove duplicated species in the lookup
@@ -16,7 +18,7 @@ clean_data <- function(biomass = NULL, catch = NULL, lookup = NULL) {
     lookup <- lookup[!dups, ]
     # Remove trophic levels <= 1
     lows <-
-      lookup[, grep("Trophic", colnames(lookup), ignore.case = TRUE)] <= 1
+      lookup[, grep("Trophic", colnames(lookup), ignore.case = TRUE)] <= minTL
     lookup <- lookup[!lows, ]
     commo <- grep("Common", colnames(lookup), ignore.case = TRUE)
     yuck <- lookup[grep("bacteria|detritus|^DIN",
