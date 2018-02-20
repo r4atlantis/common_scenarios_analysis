@@ -103,8 +103,11 @@ scenario.sub[,1] <- scenario.sub[,1]- scenario.sub[1,1]
   #files <- list.files(base.wd)
   #file.name <- file.path(base.wd, files[which(grepl("csv", files)=="TRUE")])
 
-  combo.dat <- rbind(scenario.effect[-1], guild.dat[,-8])
+  #print(scenario.effect)
+  #print(guild.dat)
+  combo.dat <- rbind(scenario.effect[-1], guild.dat)#[,-8])
   colnames(combo.dat) <- names(scenario.effect[-1])
+  #print(combo.dat)
 
   return(list(scenario.effect=scenario.effect[-1], dataframe.effect=combo.dat))
 }
